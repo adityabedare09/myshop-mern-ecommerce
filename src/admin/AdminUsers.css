@@ -1,0 +1,437 @@
+/* =========================================
+   ADMIN USERS PAGE
+========================================= */
+
+.admin-users-page {
+  min-height: calc(100vh - 70px);
+  padding: 45px 6%;
+  background: #f8fafc;
+  box-sizing: border-box;
+}
+
+.admin-users-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+.admin-users-header {
+  margin-bottom: 30px;
+}
+
+.admin-label {
+  display: inline-block;
+  margin-bottom: 8px;
+
+  color: #4f46e5;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+.admin-users-header h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 34px;
+}
+
+.admin-users-header p {
+  margin: 8px 0 0;
+
+  color: #6b7280;
+
+  font-size: 15px;
+}
+
+
+/* =========================================
+   MESSAGES
+========================================= */
+
+.admin-users-success,
+.admin-users-error {
+  margin-bottom: 20px;
+
+  padding: 13px 16px;
+
+  border-radius: 10px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+}
+
+.admin-users-success {
+  background: #ecfdf5;
+
+  border: 1px solid #a7f3d0;
+
+  color: #047857;
+}
+
+.admin-users-error {
+  background: #fef2f2;
+
+  border: 1px solid #fecaca;
+
+  color: #b91c1c;
+}
+
+
+/* =========================================
+   COUNT
+========================================= */
+
+.users-count-card {
+  display: inline-flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  margin-bottom: 25px;
+
+  padding: 18px 25px;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 14px;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+.users-count-card strong {
+  color: #111827;
+
+  font-size: 28px;
+}
+
+.users-count-card span {
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+
+/* =========================================
+   USERS LIST
+========================================= */
+
+.users-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 15px;
+}
+
+
+/* =========================================
+   USER CARD
+========================================= */
+
+.user-card {
+  display: grid;
+
+  grid-template-columns: 55px 1fr auto;
+
+  gap: 18px;
+
+  align-items: center;
+
+  padding: 20px;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 15px;
+
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+}
+
+
+/* =========================================
+   AVATAR
+========================================= */
+
+.user-avatar {
+  width: 55px;
+  height: 55px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eef2ff;
+
+  color: #4338ca;
+
+  font-size: 22px;
+
+  font-weight: 700;
+}
+
+
+/* =========================================
+   USER INFO
+========================================= */
+
+.user-info {
+  min-width: 0;
+}
+
+.user-info h2 {
+  margin: 0 0 4px;
+
+  color: #111827;
+
+  font-size: 17px;
+}
+
+.user-info p {
+  margin: 0 0 8px;
+
+  color: #6b7280;
+
+  font-size: 13px;
+
+  word-break: break-word;
+}
+
+
+/* =========================================
+   ROLE
+========================================= */
+
+.user-role {
+  display: inline-block;
+
+  padding: 4px 9px;
+
+  border-radius: 999px;
+
+  background: #f3f4f6;
+
+  color: #374151;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.admin-role {
+  background: #eef2ff;
+
+  color: #4338ca;
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+
+.user-actions {
+  display: flex;
+
+  align-items: flex-end;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.user-date {
+  color: #9ca3af;
+
+  font-size: 12px;
+}
+
+.delete-user-button {
+  padding: 8px 13px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: #fef2f2;
+
+  color: #dc2626;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.delete-user-button:hover {
+  background: #fee2e2;
+}
+
+
+/* =========================================
+   EMPTY
+========================================= */
+
+.no-users {
+  padding: 50px 20px;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 18px;
+}
+
+.no-users > div {
+  font-size: 45px;
+
+  margin-bottom: 15px;
+}
+
+.no-users h2 {
+  margin: 0 0 8px;
+
+  color: #111827;
+}
+
+.no-users p {
+  margin: 0;
+
+  color: #6b7280;
+}
+
+
+/* =========================================
+   LOADING
+========================================= */
+
+.admin-users-loading {
+  color: #6b7280;
+
+  text-align: center;
+
+  padding: 50px 0;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 800px) {
+
+  .admin-users-page {
+    padding: 35px 5%;
+  }
+
+  .user-card {
+    grid-template-columns: 50px 1fr;
+
+    gap: 15px;
+  }
+
+  .user-actions {
+    grid-column: 2;
+
+    align-items: flex-start;
+
+    flex-direction: row;
+
+    flex-wrap: wrap;
+  }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .admin-users-page {
+    padding: 25px 16px;
+  }
+
+  .admin-users-header h1 {
+    font-size: 28px;
+  }
+
+  .user-card {
+    grid-template-columns: 50px 1fr;
+
+    padding: 16px;
+  }
+
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+
+    font-size: 20px;
+  }
+
+  .user-info h2 {
+    font-size: 16px;
+  }
+
+  .user-actions {
+    grid-column: 1 / -1;
+
+    padding-top: 10px;
+
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .delete-user-button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 400px) {
+
+  .admin-users-page {
+    padding: 20px 12px;
+  }
+
+  .admin-users-header h1 {
+    font-size: 24px;
+  }
+
+  .user-card {
+    padding: 14px;
+  }
+
+  .user-actions {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .user-date {
+    font-size: 11px;
+  }
+}

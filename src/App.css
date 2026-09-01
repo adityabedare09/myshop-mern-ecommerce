@@ -1,0 +1,65 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 15px 30px;
+
+  background: #222;
+  color: white;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
+}
+
+.page {
+  text-align: center;
+  padding: 50px;
+}
+
+.products-page {
+  padding: 30px;
+  text-align: center;
+}
+
+.products-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.product-details {
+  text-align: center;
+  padding: 50px;
+}
+
+.product-details button {
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.login-page {
+  text-align: center;
+  padding: 50px;
+}
+
+.login-page input {
+  padding: 10px;
+  width: 250px;
+}
+
+.login-page button {
+  padding: 10px 25px;
+  cursor: pointer;
+}

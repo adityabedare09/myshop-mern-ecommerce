@@ -6,13 +6,13 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 
 import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
-import jwt from "jsonwebtoken";
 import User from "./model/User.js";
 
 dotenv.config();
@@ -24,7 +24,10 @@ dotenv.config();
 
 const app = express();
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
+
+const CLIENT_URL =
+  process.env.CLIENT_URL || "http://localhost:5173";
 
 
 // ========================================
@@ -40,8 +43,13 @@ const httpServer = createServer(app);
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"]
+    origin: CLIENT_URL,
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE"
+    ]
   }
 });
 
@@ -50,59 +58,107 @@ const io = new Server(httpServer, {
 app.set("io", io);
 
 
-// Socket connection
-// Socket.IO connection
+// ========================================
+// SOCKET.IO CONNECTION
+// ========================================
+
 io.on("connection", (socket) => {
-  console.log("Client connected:", socket.id);
 
-  // Client sends its JWT when connecting
-  socket.on("joinAdmin", async (token) => {
-    try {
-      if (!token) {
-        console.log("No token provided");
-        return;
-      }
+  console.log(
+    "Client connected:",
+    socket.id
+  );
 
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET
-      );
 
-      const user = await User.findById(decoded.userId);
+  // ======================================
+  // ADMIN ROOM
+  // ======================================
 
-      if (!user) {
-        console.log("Socket user not found");
-        return;
-      }
+  socket.on(
+    "joinAdmin",
+    async (token) => {
 
-      // Only admins can join this room
-      if (user.role === "admin") {
-        socket.join("admins");
+      try {
 
-        console.log(
-          `Admin joined room: ${user.username}`
+        if (!token) {
+          console.log(
+            "No token provided for admin socket"
+          );
+
+          return;
+        }
+
+
+        // Verify JWT
+        const decoded = jwt.verify(
+          token,
+          process.env.JWT_SECRET
         );
-      } else {
-        console.log(
-          `User ${user.username} is not an admin`
-        );
-      }
 
-    } catch (error) {
-      console.error(
-        "Socket authentication failed:",
-        error.message
-      );
+
+        // Find user
+        const user =
+          await User.findById(
+            decoded.userId
+          );
+
+
+        if (!user) {
+          console.log(
+            "Socket user not found"
+          );
+
+          return;
+        }
+
+
+        // Only admins can join
+        if (user.role === "admin") {
+
+          socket.join("admins");
+
+          console.log(
+            `Admin joined room: ${user.username}`
+          );
+
+        } else {
+
+          console.log(
+            `User ${user.username} is not an admin`
+          );
+
+        }
+
+      } catch (error) {
+
+        console.error(
+          "Socket authentication failed:",
+          error.message
+        );
+
+      }
     }
-  });
+  );
 
-  socket.on("disconnect", () => {
-    console.log(
-      "Client disconnected:",
-      socket.id
-    );
-  });
+
+  // ======================================
+  // DISCONNECT
+  // ======================================
+
+  socket.on(
+    "disconnect",
+    () => {
+
+      console.log(
+        "Client disconnected:",
+        socket.id
+      );
+
+    }
+  );
+
 });
+
 
 // ========================================
 // MIDDLEWARE
@@ -110,7 +166,7 @@ io.on("connection", (socket) => {
 
 app.use(
   cors({
-    origin: "http://localhost:5173"
+    origin: CLIENT_URL
   })
 );
 
@@ -140,7 +196,7 @@ app.use(
   "/api/orders",
   orderRoutes
 );
-app.use("/api/admin", adminRoutes);
+
 
 // ========================================
 // TEST ROUTE
@@ -182,10 +238,14 @@ mongoose
 // START SERVER
 // ========================================
 
-httpServer.listen(PORT, () => {
+httpServer.listen(
+  PORT,
+  "0.0.0.0",
+  () => {
 
-  console.log(
-    `Server running on http://localhost:${PORT}`
-  );
+    console.log(
+      `Server running on port ${PORT}`
+    );
 
-});
+  }
+);

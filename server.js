@@ -11,7 +11,7 @@ import jwt from "jsonwebtoken";
 import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
-import orderRoutes from "./routes/orderRoutes.js";
+import orderRoutes from "./routes/OrderRoutes.js";
 
 import User from "./model/user.js";
 

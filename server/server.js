@@ -13,7 +13,7 @@ import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 
-import User from "./model/User.js";
+import User from "./model/user.js";
 
 dotenv.config();
 

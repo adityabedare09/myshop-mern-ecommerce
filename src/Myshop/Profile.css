@@ -1,0 +1,203 @@
+.profile-page {
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 50px 20px;
+
+  background: #f8fafc;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 500px;
+
+  padding: 45px;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 20px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.profile-avatar {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 36px;
+
+  font-weight: 700;
+}
+
+.profile-card h1 {
+  margin: 0 0 8px;
+
+  color: #111827;
+
+  font-size: 30px;
+}
+
+.profile-email {
+  margin: 0 0 30px;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.profile-info {
+  margin-bottom: 30px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 12px;
+
+  overflow: hidden;
+}
+
+.profile-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 18px 20px;
+
+  border-bottom: 1px solid #e5e7eb;
+
+  text-align: left;
+}
+
+.profile-row:last-child {
+  border-bottom: none;
+}
+
+.profile-row span {
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.profile-row strong {
+  color: #111827;
+
+  font-size: 14px;
+
+  word-break: break-word;
+}
+
+.profile-button {
+  display: inline-block;
+
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 20px;
+
+  border-radius: 9px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  transition: 0.2s;
+}
+
+.profile-button:hover {
+  background: #4338ca;
+
+  transform: translateY(-1px);
+}
+.no-products-message {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 50px 25px;
+
+  text-align: center;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.05);
+}
+
+.no-products-icon {
+  margin-bottom: 15px;
+
+  font-size: 45px;
+}
+
+.no-products-message h2 {
+  margin: 0 0 10px;
+
+  color: #111827;
+}
+
+.no-products-message p {
+  margin: 0;
+
+  color: #6b7280;
+
+  line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+  .no-products-message {
+    margin: 30px 15px;
+    padding: 35px 20px;
+  }
+
+  .no-products-icon {
+    font-size: 38px;
+  }
+
+  .no-products-message h2 {
+    font-size: 20px;
+  }
+
+  .no-products-message p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 500px) {
+  .profile-card {
+    padding: 30px 20px;
+  }
+
+  .profile-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+}

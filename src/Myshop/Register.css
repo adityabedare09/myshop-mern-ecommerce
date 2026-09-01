@@ -1,0 +1,190 @@
+.register-page {
+  min-height: calc(100vh - 70px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 50px 20px;
+
+  background: #f8fafc;
+}
+
+.register-card {
+  width: 100%;
+  max-width: 450px;
+
+  padding: 40px;
+
+  background: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 18px;
+
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.register-header {
+  text-align: center;
+
+  margin-bottom: 30px;
+}
+
+.register-icon {
+  width: 60px;
+  height: 60px;
+
+  margin: 0 auto 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eef2ff;
+
+  border-radius: 15px;
+
+  font-size: 28px;
+}
+
+.register-header h1 {
+  margin: 0 0 8px;
+
+  font-size: 30px;
+
+  color: #111827;
+}
+
+.register-header p {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 14px;
+}
+
+.input-group {
+  margin-bottom: 18px;
+}
+
+.input-group label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  color: #374151;
+}
+
+.input-group input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 13px 14px;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  font-size: 14px;
+
+  transition: 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #4f46e5;
+
+  box-shadow:
+    0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.register-button {
+  width: 100%;
+
+  padding: 14px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #4f46e5;
+
+  color: white;
+
+  font-size: 15px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.register-button:hover {
+  background: #4338ca;
+
+  transform: translateY(-1px);
+}
+
+.error-message {
+  margin: 5px 0 15px;
+
+  color: #dc2626;
+
+  font-size: 13px;
+}
+
+.success-message {
+  margin: 5px 0 15px;
+
+  color: #16a34a;
+
+  font-size: 13px;
+}
+
+.register-footer {
+  margin-top: 25px;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #e5e7eb;
+
+  text-align: center;
+}
+
+.register-footer p {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 13px;
+}
+
+.register-footer a {
+  color: #4f46e5;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.register-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 500px) {
+  .register-card {
+    padding: 30px 22px;
+  }
+
+  .register-header h1 {
+    font-size: 26px;
+  }
+}

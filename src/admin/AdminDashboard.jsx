@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { Link, useNavigate } from "react-router-dom";
 import "./AdminDashboard.css";
+import API_URL from "../config";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -9,7 +10,6 @@ function AdminDashboard() {
   // ========================================
   // GET LOGGED-IN USER
   // ========================================
-
 
   const savedUser = localStorage.getItem("user");
 
@@ -70,7 +70,7 @@ function AdminDashboard() {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:5000/api/admin/stats",
+          `${API_URL}/api/admin/stats`,
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -82,7 +82,8 @@ function AdminDashboard() {
 
         if (!response.ok) {
           throw new Error(
-            data.message || "Failed to load stats"
+            data.message ||
+            "Failed to load stats"
           );
         }
 
@@ -122,7 +123,7 @@ function AdminDashboard() {
           localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:5000/api/admin/notifications",
+          `${API_URL}/api/admin/notifications`,
           {
             headers: {
               Authorization:
@@ -163,12 +164,10 @@ function AdminDashboard() {
       return;
     }
 
-    const socket = io(
-      "http://localhost:5000"
-    );
+    // IMPORTANT:
+    // Connect directly using API_URL
+    const socket = io(API_URL);
 
-
-    // Connected
     socket.on("connect", () => {
       console.log(
         "Admin Socket connected:",
@@ -178,7 +177,7 @@ function AdminDashboard() {
       const token =
         localStorage.getItem("token");
 
-      // Join admin room
+      // Join secure admin room
       socket.emit(
         "joinAdmin",
         token
@@ -186,7 +185,10 @@ function AdminDashboard() {
     });
 
 
-    // New order
+    // ======================================
+    // NEW ORDER
+    // ======================================
+
     socket.on(
       "newOrder",
       (notification) => {
@@ -208,7 +210,7 @@ function AdminDashboard() {
           ]
         );
 
-        // Update order count
+        // Update order count immediately
         setStats(
           (previous) => ({
             ...previous,
@@ -216,12 +218,14 @@ function AdminDashboard() {
               previous.orders + 1
           })
         );
-
       }
     );
 
 
-    // Disconnect
+    // ======================================
+    // DISCONNECT
+    // ======================================
+
     socket.on(
       "disconnect",
       () => {
@@ -232,7 +236,10 @@ function AdminDashboard() {
     );
 
 
-    // Cleanup
+    // ======================================
+    // CLEANUP
+    // ======================================
+
     return () => {
       socket.disconnect();
     };
@@ -241,7 +248,7 @@ function AdminDashboard() {
 
 
   // ========================================
-  // MARK NOTIFICATION AS READ
+  // MARK ONE AS READ
   // ========================================
 
   async function markAsRead(notificationId) {
@@ -251,7 +258,7 @@ function AdminDashboard() {
         localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/notifications/${notificationId}/read`,
+        `${API_URL}/api/admin/notifications/${notificationId}/read`,
         {
           method: "PUT",
 
@@ -273,13 +280,15 @@ function AdminDashboard() {
 
       setNotifications(
         (previous) =>
-          previous.map((notification) =>
-            notification._id === notificationId
-              ? {
-                ...notification,
-                read: true
-              }
-              : notification
+          previous.map(
+            (notification) =>
+              notification._id ===
+              notificationId
+                ? {
+                    ...notification,
+                    read: true
+                  }
+                : notification
           )
       );
 
@@ -296,14 +305,17 @@ function AdminDashboard() {
   // DELETE NOTIFICATION
   // ========================================
 
-  async function deleteNotification(notificationId) {
+  async function deleteNotification(
+    notificationId
+  ) {
+
     try {
 
       const token =
         localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/notifications/${notificationId}`,
+        `${API_URL}/api/admin/notifications/${notificationId}`,
         {
           method: "DELETE",
 
@@ -327,13 +339,65 @@ function AdminDashboard() {
         (previous) =>
           previous.filter(
             (notification) =>
-              notification._id !== notificationId
+              notification._id !==
+              notificationId
           )
       );
 
     } catch (error) {
       console.error(
         "Delete notification error:",
+        error
+      );
+    }
+  }
+
+
+  // ========================================
+  // MARK ALL AS READ
+  // ========================================
+
+  async function markAllAsRead() {
+
+    try {
+
+      const token =
+        localStorage.getItem("token");
+
+      const response = await fetch(
+        `${API_URL}/api/admin/notifications/read-all`,
+        {
+          method: "PUT",
+
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          }
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          "Failed to mark notifications as read"
+        );
+      }
+
+      setNotifications(
+        (previous) =>
+          previous.map(
+            (notification) => ({
+              ...notification,
+              read: true
+            })
+          )
+      );
+
+    } catch (error) {
+      console.error(
+        "Mark all read error:",
         error
       );
     }
@@ -381,6 +445,7 @@ function AdminDashboard() {
   return (
     <div className="admin-page">
 
+
       {/* =====================================
           HEADER
       ====================================== */}
@@ -412,6 +477,9 @@ function AdminDashboard() {
 
       <div className="stats-grid">
 
+
+        {/* PRODUCTS */}
+
         <div className="stat-card">
 
           <span>
@@ -430,6 +498,8 @@ function AdminDashboard() {
 
         </div>
 
+
+        {/* USERS */}
 
         <div className="stat-card">
 
@@ -450,6 +520,8 @@ function AdminDashboard() {
         </div>
 
 
+        {/* ORDERS */}
+
         <div className="stat-card">
 
           <span>
@@ -469,6 +541,8 @@ function AdminDashboard() {
         </div>
 
 
+        {/* REVENUE */}
+
         <div className="stat-card">
 
           <span>
@@ -483,8 +557,8 @@ function AdminDashboard() {
             {statsLoading
               ? "..."
               : `₹${Number(
-                stats.revenue
-              ).toLocaleString("en-IN")}`}
+                  stats.revenue
+                ).toLocaleString("en-IN")}`}
           </h2>
 
         </div>
@@ -575,59 +649,10 @@ function AdminDashboard() {
             🔔
           </div>
 
+
           <h2>
 
             Notifications
-            {unreadCount > 0 && (
-              <button
-                type="button"
-                className="mark-all-button"
-                onClick={async () => {
-                  try {
-                    const token =
-                      localStorage.getItem("token");
-
-                    const response = await fetch(
-                      "http://localhost:5000/api/admin/notifications/read-all",
-                      {
-                        method: "PUT",
-                        headers: {
-                          Authorization:
-                            `Bearer ${token}`
-                        }
-                      }
-                    );
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                      throw new Error(
-                        data.message ||
-                        "Failed to mark notifications as read"
-                      );
-                    }
-
-                    setNotifications(
-                      (previous) =>
-                        previous.map(
-                          (notification) => ({
-                            ...notification,
-                            read: true
-                          })
-                        )
-                    );
-
-                  } catch (error) {
-                    console.error(
-                      "Mark all read error:",
-                      error
-                    );
-                  }
-                }}
-              >
-                Mark All Read
-              </button>
-            )}
 
             {unreadCount > 0 && (
               <span className="notification-badge">
@@ -637,6 +662,23 @@ function AdminDashboard() {
 
           </h2>
 
+
+          {/* MARK ALL */}
+
+          {unreadCount > 0 && (
+
+            <button
+              type="button"
+              className="mark-all-button"
+              onClick={markAllAsRead}
+            >
+              Mark All Read
+            </button>
+
+          )}
+
+
+          {/* NOTIFICATIONS */}
 
           {notifications.length === 0 ? (
 
@@ -653,11 +695,13 @@ function AdminDashboard() {
 
                   <div
                     className={
-                      `notification-item ${notification.read
-                        ? "read"
-                        : "unread"
+                      `notification-item ${
+                        notification.read
+                          ? "read"
+                          : "unread"
                       }`
                     }
+
                     key={notification._id}
                   >
 
@@ -676,7 +720,9 @@ function AdminDashboard() {
                         Amount: ₹
                         {Number(
                           notification.totalAmount
-                        ).toLocaleString("en-IN")}
+                        ).toLocaleString(
+                          "en-IN"
+                        )}
                       </p>
 
                       <p>
@@ -689,9 +735,15 @@ function AdminDashboard() {
                     </div>
 
 
+                    {/* ACTION BUTTONS */}
+
                     <div className="notification-actions">
 
+
+                      {/* MARK READ */}
+
                       {!notification.read && (
+
                         <button
                           type="button"
                           onClick={() =>
@@ -702,8 +754,11 @@ function AdminDashboard() {
                         >
                           Mark Read
                         </button>
+
                       )}
 
+
+                      {/* DELETE */}
 
                       <button
                         type="button"

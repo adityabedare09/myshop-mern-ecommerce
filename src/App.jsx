@@ -14,7 +14,6 @@ import AdminDashboard from "./admin/AdminDashboard";
 import AdminProducts from "./admin/AdminProducts";
 import Checkout from "./Myshop/Checkout";
 import Orders from "./Myshop/Orders";
-import AdminOrders from "./Admin/AdminOrders";
 import AdminUsers from "./admin/AdminUsers";
 import ProtectedRoute from "./components/ProtectedRoute";
 import OrderDetails from "./Myshop/OrderDetails";

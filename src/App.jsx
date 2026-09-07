@@ -24,15 +24,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 function App() {
   const [cartItems, setCartItems] = useState([]);
 
-  // Clear entire cart
   function clearCart() {
     setCartItems([]);
   }
 
-  // Add product to cart
   function addToCart(product) {
-    console.log("ADDING PRODUCT:", product._id, product.name);
-
     setCartItems((currentItems) => {
       const existingProduct = currentItems.find(
         (item) => item._id === product._id
@@ -59,14 +55,14 @@ function App() {
     });
   }
 
-  // Remove product completely
   function removeFromCart(productId) {
     setCartItems((currentItems) =>
-      currentItems.filter((product) => product._id !== productId)
+      currentItems.filter(
+        (product) => product._id !== productId
+      )
     );
   }
 
-  // Increase quantity
   function increaseQuantity(productId) {
     setCartItems((currentItems) =>
       currentItems.map((product) =>
@@ -80,11 +76,11 @@ function App() {
     );
   }
 
-  // Decrease quantity
   function decreaseQuantity(productId) {
     setCartItems((currentItems) =>
       currentItems.map((product) =>
-        product._id === productId && product.quantity > 1
+        product._id === productId &&
+        product.quantity > 1
           ? {
               ...product,
               quantity: product.quantity - 1,
@@ -99,17 +95,27 @@ function App() {
       <Navbar />
 
       <Routes>
-        {/* Public routes */}
+
+        {/* ==============================
+            PUBLIC ROUTES
+        ============================== */}
+
         <Route path="/" element={<Home />} />
 
         <Route
           path="/products"
-          element={<Products addToCart={addToCart} />}
+          element={
+            <Products addToCart={addToCart} />
+          }
         />
 
         <Route
           path="/products/:id"
-          element={<ProductDetails addToCart={addToCart} />}
+          element={
+            <ProductDetails
+              addToCart={addToCart}
+            />
+          }
         />
 
         <Route
@@ -124,34 +130,79 @@ function App() {
           }
         />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-
-        <Route path="/Profile" element={<Profile />} />
-
         <Route
-          path="/checkout"
-          element={
-            <Checkout
-              cartItems={cartItems}
-              clearCart={clearCart}
-            />
-          }
+          path="/login"
+          element={<Login />}
         />
 
-        {/* Protected user routes */}
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+        {/* ==============================
+            PROTECTED USER ROUTES
+        ============================== */}
+
         <Route element={<ProtectedRoute />}>
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/orders/:id" element={<OrderDetails />} />
+
+          <Route
+            path="/profile"
+            element={<Profile />}
+          />
+
+          <Route
+            path="/checkout"
+            element={
+              <Checkout
+                cartItems={cartItems}
+                clearCart={clearCart}
+              />
+            }
+          />
+
+          <Route
+            path="/orders"
+            element={<Orders />}
+          />
+
+          <Route
+            path="/orders/:id"
+            element={<OrderDetails />}
+          />
+
         </Route>
 
-        {/* Protected admin routes */}
-        <Route element={<ProtectedRoute adminOnly />}>
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/products" element={<AdminProducts />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
+        {/* ==============================
+            PROTECTED ADMIN ROUTES
+        ============================== */}
+
+        <Route
+          element={
+            <ProtectedRoute adminOnly />
+          }
+        >
+          <Route
+            path="/admin"
+            element={<AdminDashboard />}
+          />
+
+          <Route
+            path="/admin/products"
+            element={<AdminProducts />}
+          />
+
+          <Route
+            path="/admin/orders"
+            element={<AdminOrders />}
+          />
+
+          <Route
+            path="/admin/users"
+            element={<AdminUsers />}
+          />
         </Route>
+
       </Routes>
     </BrowserRouter>
   );

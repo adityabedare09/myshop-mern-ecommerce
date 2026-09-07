@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
 import "./ProductDetails.css";
+import API_URL from "../config";
 
 function ProductDetails({ addToCart }) {
   // Gets the product _id from /products/:id
@@ -25,23 +26,49 @@ function ProductDetails({ addToCart }) {
         console.log("Fetching product:", id);
 
         const response = await fetch(
-          `http://localhost:5000/api/products/${id}`
+          `${API_URL}/api/products/${id}`
         );
 
-        console.log("Response status:", response.status);
+        console.log(
+          "Response status:",
+          response.status
+        );
 
-        if (!response.ok) {
-          throw new Error(`Server returned ${response.status}`);
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(
+            "Backend returned an invalid response."
+          );
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            data.message ||
+              `Server returned ${response.status}`
+          );
+        }
 
-        console.log("Product received:", data);
+        console.log(
+          "Product received:",
+          data
+        );
 
         setProduct(data);
       } catch (error) {
-        console.error("Product fetch error:", error);
-        setError(error.message);
+        console.error(
+          "Product fetch error:",
+          error
+        );
+
+        setError(
+          error.message ||
+            "Failed to load product"
+        );
       } finally {
         setLoading(false);
       }
@@ -103,7 +130,8 @@ function ProductDetails({ addToCart }) {
         <div className="details-content">
 
           <span className="details-category">
-            {product.category || "Electronics"}
+            {product.category ||
+              "Electronics"}
           </span>
 
           <h1>{product.name}</h1>
@@ -117,7 +145,10 @@ function ProductDetails({ addToCart }) {
           </div>
 
           <h2 className="details-price">
-            ₹{Number(product.price).toLocaleString("en-IN")}
+            ₹
+            {Number(
+              product.price || 0
+            ).toLocaleString("en-IN")}
           </h2>
 
           <p className="details-description">
@@ -137,25 +168,36 @@ function ProductDetails({ addToCart }) {
           <div className="details-features">
             <div>
               🚚
-              <span>Fast Delivery</span>
+              <span>
+                Fast Delivery
+              </span>
             </div>
 
             <div>
               🔒
-              <span>Secure Payment</span>
+              <span>
+                Secure Payment
+              </span>
             </div>
 
             <div>
               ↩️
-              <span>Easy Returns</span>
+              <span>
+                Easy Returns
+              </span>
             </div>
           </div>
 
           <button
             className="cart-button"
-            onClick={() => addToCart(product)}
+            onClick={() =>
+              addToCart(product)
+            }
+            disabled={!product.stock}
           >
-            Add to Cart 🛒
+            {product.stock
+              ? "Add to Cart 🛒"
+              : "Out of Stock"}
           </button>
 
           <Link

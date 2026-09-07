@@ -1,338 +1,422 @@
 import { useEffect, useState } from "react";
 import "./AdminOrders.css";
+import API_URL from "../config";
 
 function AdminOrders() {
-    const [orders, setOrders] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-    // Get logged-in admin token
-    const getToken = () => {
-        return localStorage.getItem("token");
-    };
+  // =========================================
+  // GET TOKEN
+  // =========================================
 
-    // Fetch all orders
-    async function fetchOrders() {
-        try {
-            setLoading(true);
-            setError("");
+  function getToken() {
+    return localStorage.getItem("token");
+  }
 
-            const response = await fetch(
-                "http://localhost:5000/api/admin/orders",
-                {
-                    headers: {
-                        Authorization: `Bearer ${getToken()}`
-                    }
-                }
-            );
+  // =========================================
+  // FETCH ORDERS
+  // =========================================
 
-            const data = await response.json();
+  async function fetchOrders() {
+    try {
+      setLoading(true);
+      setError("");
 
-            if (!response.ok) {
-                throw new Error(
-                    data.message || "Failed to fetch orders"
-                );
-            }
+      const token = getToken();
 
-            setOrders(data);
-        } catch (error) {
-            console.error("Admin orders error:", error);
-            setError(error.message);
-        } finally {
-            setLoading(false);
+      const response = await fetch(
+        `${API_URL}/api/admin/orders`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-    }
+      );
 
-    useEffect(() => {
-        async function loadOrders() {
-            try {
-                setLoading(true);
-                setError("");
+      const data = await response.json();
 
-                const token = localStorage.getItem("token");
-
-                const response = await fetch(
-                    "http://localhost:5000/api/admin/orders",
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    }
-                );
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(
-                        data.message || "Failed to fetch orders"
-                    );
-                }
-
-                setOrders(data);
-
-            } catch (error) {
-                console.error("Admin orders error:", error);
-                setError(error.message);
-
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        loadOrders();
-    }, []);
-    // Update order status
-    async function updateStatus(orderId, status) {
-        try {
-            const response = await fetch(
-                `http://localhost:5000/api/admin/orders/${orderId}`,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${getToken()}`
-                    },
-
-                    body: JSON.stringify({
-                        status
-                    })
-                }
-            );
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(
-                    data.message || "Failed to update order"
-                );
-            }
-
-            // Refresh orders
-            fetchOrders();
-        } catch (error) {
-            console.error("Update order error:", error);
-            setError(error.message);
-        }
-    }
-
-    if (loading) {
-        return (
-            <div className="admin-orders-page">
-                <h2>Loading orders...</h2>
-            </div>
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to fetch orders"
         );
+      }
+
+      setOrders(data);
+    } catch (error) {
+      console.error("Admin orders error:", error);
+      setError(
+        error.message || "Failed to fetch orders"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // =========================================
+  // INITIAL LOAD
+  // =========================================
+
+  useEffect(() => {
+    async function loadInitialOrders() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          `${API_URL}/api/admin/orders`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data.message || "Failed to fetch orders"
+          );
+        }
+
+        setOrders(data);
+      } catch (error) {
+        console.error(
+          "Initial admin orders error:",
+          error
+        );
+
+        setError(
+          error.message || "Failed to fetch orders"
+        );
+      } finally {
+        setLoading(false);
+      }
     }
 
+    loadInitialOrders();
+  }, []);
+
+  // =========================================
+  // UPDATE ORDER STATUS
+  // =========================================
+
+  async function updateStatus(orderId, status) {
+    try {
+      setError("");
+
+      const response = await fetch(
+        `${API_URL}/api/admin/orders/${orderId}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${getToken()}`,
+          },
+
+          body: JSON.stringify({
+            status,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Failed to update order"
+        );
+      }
+
+      await fetchOrders();
+    } catch (error) {
+      console.error(
+        "Update order error:",
+        error
+      );
+
+      setError(
+        error.message || "Failed to update order"
+      );
+    }
+  }
+
+  // =========================================
+  // LOADING
+  // =========================================
+
+  if (loading) {
     return (
-        <div className="admin-orders-page">
+      <div className="admin-orders-page">
+        <h2>Loading orders...</h2>
+      </div>
+    );
+  }
 
-            <div className="admin-orders-container">
+  // =========================================
+  // PAGE
+  // =========================================
 
-                <div className="admin-orders-header">
-                    <span>ADMIN PANEL</span>
+  return (
+    <div className="admin-orders-page">
+      <div className="admin-orders-container">
 
-                    <h1>Order Management</h1>
+        {/* Header */}
 
-                    <p>
-                        View and manage customer orders.
-                    </p>
+        <div className="admin-orders-header">
+          <span>ADMIN PANEL</span>
+
+          <h1>Order Management</h1>
+
+          <p>
+            View and manage customer orders.
+          </p>
+        </div>
+
+        {/* Error */}
+
+        {error && (
+          <div className="admin-orders-error">
+            {error}
+          </div>
+        )}
+
+        {/* No Orders */}
+
+        {orders.length === 0 ? (
+          <div className="no-orders">
+            <div>📦</div>
+
+            <h2>No orders yet</h2>
+
+            <p>
+              Customer orders will appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="admin-orders-list">
+
+            {orders.map((order) => (
+              <div
+                className="admin-order-card"
+                key={order._id}
+              >
+
+                {/* Order Header */}
+
+                <div className="admin-order-top">
+
+                  <div>
+                    <span>ORDER ID</span>
+
+                    <strong>
+                      {order._id}
+                    </strong>
+                  </div>
+
+                  <select
+                    value={order.status}
+                    onChange={(e) =>
+                      updateStatus(
+                        order._id,
+                        e.target.value
+                      )
+                    }
+                  >
+                    <option value="Placed">
+                      Placed
+                    </option>
+
+                    <option value="Confirmed">
+                      Confirmed
+                    </option>
+
+                    <option value="Shipped">
+                      Shipped
+                    </option>
+
+                    <option value="Delivered">
+                      Delivered
+                    </option>
+
+                    <option value="Cancelled">
+                      Cancelled
+                    </option>
+                  </select>
+
                 </div>
 
-                {error && (
-                    <div className="admin-orders-error">
-                        {error}
-                    </div>
-                )}
+                {/* Customer */}
 
-                {orders.length === 0 ? (
-                    <div className="no-orders">
-                        <div>📦</div>
+                <div className="customer-info">
+                  <h3>Customer</h3>
 
-                        <h2>No orders yet</h2>
+                  <p>
+                    {order.user?.username ||
+                      "Unknown User"}
+                  </p>
 
-                        <p>
-                            Customer orders will appear here.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="admin-orders-list">
+                  <p>
+                    {order.user?.email || ""}
+                  </p>
+                </div>
 
-                        {orders.map((order) => (
+                {/* Items */}
 
-                            <div
-                                className="admin-order-card"
-                                key={order._id}
-                            >
+                <div className="admin-order-items">
 
-                                {/* Order header */}
-                                <div className="admin-order-top">
+                  <h3>Items</h3>
 
-                                    <div>
-                                        <span>ORDER ID</span>
+                  {order.items?.map(
+                    (item, index) => (
+                      <div
+                        className="admin-order-item"
+                        key={`${order._id}-${
+                          item.product?._id ||
+                          index
+                        }`}
+                      >
 
-                                        <strong>
-                                            {order._id}
-                                        </strong>
-                                    </div>
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                        />
 
-                                    <select
-                                        value={order.status}
-                                        onChange={(e) =>
-                                            updateStatus(
-                                                order._id,
-                                                e.target.value
-                                            )
-                                        }
-                                    >
-                                        <option value="Placed">
-                                            Placed
-                                        </option>
+                        <div>
+                          <strong>
+                            {item.name}
+                          </strong>
 
-                                        <option value="Confirmed">
-                                            Confirmed
-                                        </option>
+                          <p>
+                            Quantity:{" "}
+                            {item.quantity}
+                          </p>
 
-                                        <option value="Shipped">
-                                            Shipped
-                                        </option>
+                          <p>
+                            ₹
+                            {Number(
+                              item.price || 0
+                            ).toLocaleString(
+                              "en-IN"
+                            )}
+                          </p>
+                        </div>
 
-                                        <option value="Delivered">
-                                            Delivered
-                                        </option>
+                        <strong>
+                          ₹
+                          {(
+                            Number(
+                              item.price || 0
+                            ) *
+                            Number(
+                              item.quantity || 0
+                            )
+                          ).toLocaleString(
+                            "en-IN"
+                          )}
+                        </strong>
 
-                                        <option value="Cancelled">
-                                            Cancelled
-                                        </option>
-                                    </select>
+                      </div>
+                    )
+                  )}
 
-                                </div>
+                </div>
 
+                {/* Shipping */}
 
-                                {/* Customer */}
-                                <div className="customer-info">
+                <div className="shipping-info">
 
-                                    <h3>Customer</h3>
+                  <h3>
+                    Shipping Address
+                  </h3>
 
-                                    <p>
-                                        {order.user?.username ||
-                                            "Unknown User"}
-                                    </p>
+                  <p>
+                    {
+                      order.shippingAddress
+                        ?.name
+                    }
+                  </p>
 
-                                    <p>
-                                        {order.user?.email || ""}
-                                    </p>
+                  <p>
+                    {
+                      order.shippingAddress
+                        ?.phone
+                    }
+                  </p>
 
-                                </div>
+                  <p>
+                    {
+                      order.shippingAddress
+                        ?.address
+                    }
+                  </p>
 
+                  <p>
+                    {
+                      order.shippingAddress
+                        ?.city
+                    }
+                    ,{" "}
+                    {
+                      order.shippingAddress
+                        ?.state
+                    }
+                  </p>
 
-                                {/* Items */}
-                                <div className="admin-order-items">
+                  <p>
+                    {
+                      order.shippingAddress
+                        ?.pincode
+                    }
+                  </p>
 
-                                    <h3>Items</h3>
+                </div>
 
-                                    {order.items.map((item, index) => (
+                {/* Footer */}
 
-                                        <div
-                                            className="admin-order-item"
-                                            key={`${order._id}-${item.product?._id || index}`}
-                                        >
+                <div className="admin-order-footer">
 
-                                            <img
-                                                src={item.image}
-                                                alt={item.name}
-                                            />
+                  <div>
+                    <span>Total</span>
 
-                                            <div>
-                                                <strong>
-                                                    {item.name}
-                                                </strong>
+                    <strong>
+                      ₹
+                      {Number(
+                        order.totalAmount || 0
+                      ).toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+                  </div>
 
-                                                <p>
-                                                    Quantity: {item.quantity}
-                                                </p>
+                  <div>
+                    <span>Ordered</span>
 
-                                                <p>
-                                                    ₹{item.price.toLocaleString("en-IN")}
-                                                </p>
-                                            </div>
+                    <strong>
+                      {new Date(
+                        order.createdAt
+                      ).toLocaleDateString(
+                        "en-IN"
+                      )}
+                    </strong>
+                  </div>
 
-                                            <strong>
-                                                ₹{(
-                                                    item.price *
-                                                    item.quantity
-                                                ).toLocaleString("en-IN")}
-                                            </strong>
+                </div>
 
-                                        </div>
+              </div>
+            ))}
 
-                                    ))}
+          </div>
+        )}
 
-                                </div>
-
-
-                                {/* Shipping */}
-                                <div className="shipping-info">
-
-                                    <h3>Shipping Address</h3>
-
-                                    <p>
-                                        {order.shippingAddress?.name}
-                                    </p>
-
-                                    <p>
-                                        {order.shippingAddress?.phone}
-                                    </p>
-
-                                    <p>
-                                        {order.shippingAddress?.address}
-                                    </p>
-
-                                    <p>
-                                        {order.shippingAddress?.city},{" "}
-                                        {order.shippingAddress?.state}
-                                    </p>
-
-                                    <p>
-                                        {order.shippingAddress?.pincode}
-                                    </p>
-
-                                </div>
-
-
-                                {/* Footer */}
-                                <div className="admin-order-footer">
-
-                                    <div>
-                                        <span>Total</span>
-
-                                        <strong>
-                                            ₹{order.totalAmount.toLocaleString("en-IN")}
-                                        </strong>
-                                    </div>
-
-                                    <div>
-                                        <span>Ordered</span>
-
-                                        <strong>
-                                            {new Date(
-                                                order.createdAt
-                                            ).toLocaleDateString("en-IN")}
-                                        </strong>
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        ))}
-
-                    </div>
-                )}
-
-            </div>
-        </div>
-    );
+      </div>
+    </div>
+  );
 }
 
 export default AdminOrders;

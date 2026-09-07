@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Checkout.css";
+import API_URL from "../config";
 
 function Checkout({ cartItems, clearCart }) {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ function Checkout({ cartItems, clearCart }) {
     address: "",
     city: "",
     state: "",
-    pincode: ""
+    pincode: "",
   });
 
   const [error, setError] = useState("");
@@ -19,17 +20,20 @@ function Checkout({ cartItems, clearCart }) {
 
   // Calculate total
   const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum +
+      Number(item.price || 0) *
+        Number(item.quantity || 0),
     0
   );
 
   function handleChange(e) {
     const { name, value } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: value
-    });
+    setFormData((previousData) => ({
+      ...previousData,
+      [name]: value,
+    }));
   }
 
   async function handlePlaceOrder(e) {
@@ -40,7 +44,9 @@ function Checkout({ cartItems, clearCart }) {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      setError("Please login before placing an order.");
+      setError(
+        "Please login before placing an order."
+      );
       return;
     }
 
@@ -53,31 +59,42 @@ function Checkout({ cartItems, clearCart }) {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/orders",
+        `${API_URL}/api/orders`,
         {
           method: "POST",
 
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
 
           body: JSON.stringify({
             items: cartItems.map((item) => ({
               product: item._id,
-              quantity: item.quantity
+              quantity: Number(item.quantity),
             })),
 
-            shippingAddress: formData
-          })
+            shippingAddress: formData,
+          }),
         }
       );
 
-      const data = await response.json();
+      const text = await response.text();
+
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(
+          "Backend returned an invalid response."
+        );
+      }
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to place order"
+          data.message ||
+            "Failed to place order"
         );
       }
 
@@ -86,10 +103,16 @@ function Checkout({ cartItems, clearCart }) {
 
       // Go to orders page
       navigate("/orders");
-
     } catch (error) {
-      console.error("Order error:", error);
-      setError(error.message);
+      console.error(
+        "Order error:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "Failed to place order"
+      );
     } finally {
       setLoading(false);
     }
@@ -97,12 +120,15 @@ function Checkout({ cartItems, clearCart }) {
 
   return (
     <div className="checkout-page">
-
       <div className="checkout-container">
 
         <div className="checkout-header">
           <h1>Checkout</h1>
-          <p>Enter your delivery details and place your order.</p>
+
+          <p>
+            Enter your delivery details and place
+            your order.
+          </p>
         </div>
 
         {error && (
@@ -114,8 +140,8 @@ function Checkout({ cartItems, clearCart }) {
         <div className="checkout-layout">
 
           {/* Shipping form */}
-          <div className="checkout-form-card">
 
+          <div className="checkout-form-card">
             <h2>Shipping Address</h2>
 
             <form onSubmit={handlePlaceOrder}>
@@ -214,10 +240,9 @@ function Checkout({ cartItems, clearCart }) {
             </form>
           </div>
 
-
           {/* Order summary */}
-          <div className="checkout-summary">
 
+          <div className="checkout-summary">
             <h2>Order Summary</h2>
 
             {cartItems.map((item) => (
@@ -226,17 +251,32 @@ function Checkout({ cartItems, clearCart }) {
                 key={item._id}
               >
                 <div>
-                  <strong>{item.name}</strong>
+                  <strong>
+                    {item.name}
+                  </strong>
+
                   <p>
                     {item.quantity} × ₹
-                    {item.price.toLocaleString("en-IN")}
+                    {Number(
+                      item.price || 0
+                    ).toLocaleString(
+                      "en-IN"
+                    )}
                   </p>
                 </div>
 
                 <strong>
-                  ₹{(
-                    item.price * item.quantity
-                  ).toLocaleString("en-IN")}
+                  ₹
+                  {(
+                    Number(
+                      item.price || 0
+                    ) *
+                    Number(
+                      item.quantity || 0
+                    )
+                  ).toLocaleString(
+                    "en-IN"
+                  )}
                 </strong>
               </div>
             ))}
@@ -245,14 +285,15 @@ function Checkout({ cartItems, clearCart }) {
               <span>Total</span>
 
               <strong>
-                ₹{total.toLocaleString("en-IN")}
+                ₹
+                {total.toLocaleString(
+                  "en-IN"
+                )}
               </strong>
             </div>
-
           </div>
 
         </div>
-
       </div>
     </div>
   );

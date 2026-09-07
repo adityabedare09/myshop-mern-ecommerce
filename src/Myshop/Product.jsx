@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-
+import API_URL from "../config";
 import ProductCard from "../components/ProductCard";
 import "../components/Product.css";
 
@@ -18,7 +18,6 @@ function Products({ addToCart }) {
   const searchQuery =
     searchParams.get("search")?.toLowerCase().trim() || "";
 
-
   // ========================================
   // FETCH PRODUCTS
   // ========================================
@@ -30,29 +29,35 @@ function Products({ addToCart }) {
         setError("");
 
         const response = await fetch(
-          "http://localhost:5000/api/products"
+          `${API_URL}/api/products`
         );
 
-        if (!response.ok) {
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
           throw new Error(
-            "Failed to fetch products"
+            "Backend returned an invalid response."
           );
         }
 
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(
+            data.message ||
+              `Failed to fetch products (${response.status})`
+          );
+        }
 
-        setProducts(data);
-
+        setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error(
-          "Products error:",
-          error
-        );
+        console.error("Products error:", error);
 
         setError(
-          "Unable to load products."
+          error.message || "Unable to load products."
         );
-
       } finally {
         setLoading(false);
       }
@@ -61,14 +66,12 @@ function Products({ addToCart }) {
     loadProducts();
   }, []);
 
-
   // ========================================
   // FILTER PRODUCTS
   // ========================================
 
   const filteredProducts = products.filter(
     (product) => {
-
       // Show everything when there is no search
       if (!searchQuery) {
         return true;
@@ -95,7 +98,6 @@ function Products({ addToCart }) {
     }
   );
 
-
   // ========================================
   // LOADING
   // ========================================
@@ -103,13 +105,10 @@ function Products({ addToCart }) {
   if (loading) {
     return (
       <div className="products-page">
-        <h2>
-          Loading products...
-        </h2>
+        <h2>Loading products...</h2>
       </div>
     );
   }
-
 
   // ========================================
   // ERROR
@@ -118,13 +117,10 @@ function Products({ addToCart }) {
   if (error) {
     return (
       <div className="products-page">
-        <h2>
-          {error}
-        </h2>
+        <h2>{error}</h2>
       </div>
     );
   }
-
 
   // ========================================
   // PAGE
@@ -133,12 +129,9 @@ function Products({ addToCart }) {
   return (
     <div className="products-page">
 
-      {/* =====================================
-          HEADER
-      ====================================== */}
+      {/* HEADER */}
 
       <div className="products-header">
-
         <h1>
           {searchQuery
             ? `Search Results for "${searchQuery}"`
@@ -154,54 +147,35 @@ function Products({ addToCart }) {
               } found`
             : "Discover our latest products at the best prices."}
         </p>
-
       </div>
 
-
-      {/* =====================================
-          PRODUCTS
-      ====================================== */}
+      {/* PRODUCTS */}
 
       {filteredProducts.length === 0 ? (
-
         <div className="no-products-message">
-
           <div className="no-products-icon">
             🔍
           </div>
 
-          <h2>
-            No products found
-          </h2>
+          <h2>No products found</h2>
 
           <p>
             {searchQuery
               ? `We couldn't find anything matching "${searchQuery}".`
               : "There are no products available right now."}
           </p>
-
         </div>
-
       ) : (
-
         <div className="products-container">
-
-          {filteredProducts.map(
-            (product) => (
-
-              <ProductCard
-                key={product._id}
-                product={product}
-                addToCart={addToCart}
-              />
-
-            )
-          )}
-
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product._id}
+              product={product}
+              addToCart={addToCart}
+            />
+          ))}
         </div>
-
       )}
-
     </div>
   );
 }

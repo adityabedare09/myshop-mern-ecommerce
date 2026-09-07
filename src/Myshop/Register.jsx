@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "./Register.css";
+import API_URL from "../config";
 
 function Register() {
-
   // Stores username
   const [username, setUsername] = useState("");
 
@@ -21,7 +21,6 @@ function Register() {
 
   // Stores success message
   const [success, setSuccess] = useState("");
-
 
   // Runs when registration form is submitted
   async function handleRegister(e) {
@@ -49,7 +48,7 @@ function Register() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/users/register",
+        `${API_URL}/api/users/register`,
         {
           method: "POST",
 
@@ -58,8 +57,8 @@ function Register() {
           },
 
           body: JSON.stringify({
-            username,
-            email,
+            username: username.trim(),
+            email: email.trim(),
             password,
           }),
         }
@@ -90,28 +89,30 @@ function Register() {
       }
 
       // Success
-      setSuccess("Registration successful!");
+      setSuccess(
+        "Registration successful! You can now login."
+      );
 
       // Clear form
       setUsername("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-
     } catch (error) {
       console.error("Registration error:", error);
-      setError(error.message);
+
+      setError(
+        error.message || "Registration failed"
+      );
     }
   }
 
   return (
     <div className="register-page">
-
       <div className="register-card">
 
         {/* Header */}
         <div className="register-header">
-
           <div className="register-icon">
             🛒
           </div>
@@ -121,16 +122,13 @@ function Register() {
           <p>
             Join MyShop and start shopping
           </p>
-
         </div>
-
 
         {/* Registration Form */}
         <form onSubmit={handleRegister}>
 
           {/* Username */}
           <div className="input-group">
-
             <label>Username</label>
 
             <input
@@ -140,14 +138,12 @@ function Register() {
               onChange={(e) =>
                 setUsername(e.target.value)
               }
+              required
             />
-
           </div>
-
 
           {/* Email */}
           <div className="input-group">
-
             <label>Email</label>
 
             <input
@@ -157,14 +153,12 @@ function Register() {
               onChange={(e) =>
                 setEmail(e.target.value)
               }
+              required
             />
-
           </div>
-
 
           {/* Password */}
           <div className="input-group">
-
             <label>Password</label>
 
             <input
@@ -174,14 +168,12 @@ function Register() {
               onChange={(e) =>
                 setPassword(e.target.value)
               }
+              required
             />
-
           </div>
-
 
           {/* Confirm Password */}
           <div className="input-group">
-
             <label>Confirm Password</label>
 
             <input
@@ -191,10 +183,9 @@ function Register() {
               onChange={(e) =>
                 setConfirmPassword(e.target.value)
               }
+              required
             />
-
           </div>
-
 
           {/* Error message */}
           {error && (
@@ -203,14 +194,12 @@ function Register() {
             </p>
           )}
 
-
           {/* Success message */}
           {success && (
             <p className="success-message">
               {success}
             </p>
           )}
-
 
           {/* Register button */}
           <button
@@ -219,13 +208,10 @@ function Register() {
           >
             Create Account
           </button>
-
         </form>
-
 
         {/* Login link */}
         <div className="register-footer">
-
           <p>Already have an account?</p>
 
           <Link
@@ -234,11 +220,9 @@ function Register() {
           >
             Login
           </Link>
-
         </div>
 
       </div>
-
     </div>
   );
 }

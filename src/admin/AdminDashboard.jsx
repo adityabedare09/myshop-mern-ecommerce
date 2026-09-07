@@ -283,11 +283,11 @@ function AdminDashboard() {
           previous.map(
             (notification) =>
               notification._id ===
-              notificationId
+                notificationId
                 ? {
-                    ...notification,
-                    read: true
-                  }
+                  ...notification,
+                  read: true
+                }
                 : notification
           )
       );
@@ -557,8 +557,8 @@ function AdminDashboard() {
             {statsLoading
               ? "..."
               : `₹${Number(
-                  stats.revenue
-                ).toLocaleString("en-IN")}`}
+                stats.revenue
+              ).toLocaleString("en-IN")}`}
           </h2>
 
         </div>
@@ -695,10 +695,9 @@ function AdminDashboard() {
 
                   <div
                     className={
-                      `notification-item ${
-                        notification.read
-                          ? "read"
-                          : "unread"
+                      `notification-item ${notification.read
+                        ? "read"
+                        : "unread"
                       }`
                     }
 

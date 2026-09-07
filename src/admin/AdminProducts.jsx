@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import "./AdminProducts.css";
+import API_URL from "../config";
 
 function AdminProducts() {
   // =========================================
   // STATE
   // =========================================
 
-  // Products from MongoDB
   const [products, setProducts] = useState([]);
 
-  // Product form
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -18,19 +17,15 @@ function AdminProducts() {
     category: "",
     brand: "",
     rating: "",
-    stock: ""
+    stock: "",
   });
 
-  // Product currently being edited
   const [editingId, setEditingId] = useState(null);
 
-  // Messages
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // Loading state
   const [loading, setLoading] = useState(true);
-
 
   // =========================================
   // GET TOKEN
@@ -40,9 +35,53 @@ function AdminProducts() {
     return localStorage.getItem("token");
   }
 
+  // =========================================
+  // FETCH PRODUCTS
+  // =========================================
+
+  async function fetchProducts() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const token = getToken();
+
+      const response = await fetch(
+        `${API_URL}/api/admin/products`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            "Failed to fetch products"
+        );
+      }
+
+      setProducts(data);
+    } catch (error) {
+      console.error(
+        "Fetch products error:",
+        error
+      );
+
+      setError(
+        error.message ||
+          "Failed to fetch products"
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // =========================================
-  // INITIAL LOAD PRODUCTS
+  // INITIAL LOAD
   // =========================================
 
   useEffect(() => {
@@ -51,14 +90,15 @@ function AdminProducts() {
         setLoading(true);
         setError("");
 
-        const token = getToken();
+        const token =
+          localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:5000/api/admin/products",
+          `${API_URL}/api/admin/products`,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
@@ -66,20 +106,22 @@ function AdminProducts() {
 
         if (!response.ok) {
           throw new Error(
-            data.message || "Failed to fetch products"
+            data.message ||
+              "Failed to fetch products"
           );
         }
 
         setProducts(data);
-
       } catch (error) {
         console.error(
           "Initial products error:",
           error
         );
 
-        setError(error.message);
-
+        setError(
+          error.message ||
+            "Failed to fetch products"
+        );
       } finally {
         setLoading(false);
       }
@@ -87,45 +129,6 @@ function AdminProducts() {
 
     loadInitialProducts();
   }, []);
-
-
-  // =========================================
-  // RELOAD PRODUCTS
-  // =========================================
-
-  async function reloadProducts() {
-    try {
-      const token = getToken();
-
-      const response = await fetch(
-        "http://localhost:5000/api/admin/products",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.message || "Failed to fetch products"
-        );
-      }
-
-      setProducts(data);
-
-    } catch (error) {
-      console.error(
-        "Reload products error:",
-        error
-      );
-
-      setError(error.message);
-    }
-  }
-
 
   // =========================================
   // HANDLE INPUT
@@ -136,10 +139,9 @@ function AdminProducts() {
 
     setFormData((previousData) => ({
       ...previousData,
-      [name]: value
+      [name]: value,
     }));
   }
-
 
   // =========================================
   // ADD / UPDATE PRODUCT
@@ -155,8 +157,8 @@ function AdminProducts() {
       const token = getToken();
 
       const url = editingId
-        ? `http://localhost:5000/api/admin/products/${editingId}`
-        : "http://localhost:5000/api/admin/products";
+        ? `${API_URL}/api/admin/products/${editingId}`
+        : `${API_URL}/api/admin/products`;
 
       const method = editingId
         ? "PUT"
@@ -166,8 +168,9 @@ function AdminProducts() {
         method,
 
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          "Content-Type":
+            "application/json",
+          Authorization: `Bearer ${token}`,
         },
 
         body: JSON.stringify({
@@ -177,16 +180,18 @@ function AdminProducts() {
           description: formData.description,
           category: formData.category,
           brand: formData.brand,
-          rating: Number(formData.rating) || 0,
-          stock: Number(formData.stock)
-        })
+          rating:
+            Number(formData.rating) || 0,
+          stock: Number(formData.stock),
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Product operation failed"
+          data.message ||
+            "Product operation failed"
         );
       }
 
@@ -196,22 +201,21 @@ function AdminProducts() {
           : "Product added successfully!"
       );
 
-      // Clear form
       resetForm();
 
-      // Refresh products
-      await reloadProducts();
-
+      await fetchProducts();
     } catch (error) {
       console.error(
         "Product save error:",
         error
       );
 
-      setError(error.message);
+      setError(
+        error.message ||
+          "Product operation failed"
+      );
     }
   }
-
 
   // =========================================
   // EDIT PRODUCT
@@ -224,32 +228,33 @@ function AdminProducts() {
       name: product.name || "",
       price: product.price ?? "",
       image: product.image || "",
-      description: product.description || "",
-      category: product.category || "",
+      description:
+        product.description || "",
+      category:
+        product.category || "",
       brand: product.brand || "",
       rating: product.rating ?? "",
-      stock: product.stock ?? ""
+      stock: product.stock ?? "",
     });
 
     setMessage("");
     setError("");
 
-    // Scroll to top so admin can see the form
     window.scrollTo({
       top: 0,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }
-
 
   // =========================================
   // DELETE PRODUCT
   // =========================================
 
   async function handleDelete(productId) {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this product?"
-    );
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this product?"
+      );
 
     if (!confirmDelete) {
       return;
@@ -262,13 +267,13 @@ function AdminProducts() {
       const token = getToken();
 
       const response = await fetch(
-        `http://localhost:5000/api/admin/products/${productId}`,
+        `${API_URL}/api/admin/products/${productId}`,
         {
           method: "DELETE",
 
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
@@ -276,7 +281,8 @@ function AdminProducts() {
 
       if (!response.ok) {
         throw new Error(
-          data.message || "Failed to delete product"
+          data.message ||
+            "Failed to delete product"
         );
       }
 
@@ -284,18 +290,19 @@ function AdminProducts() {
         "Product deleted successfully!"
       );
 
-      await reloadProducts();
-
+      await fetchProducts();
     } catch (error) {
       console.error(
         "Delete product error:",
         error
       );
 
-      setError(error.message);
+      setError(
+        error.message ||
+          "Failed to delete product"
+      );
     }
   }
-
 
   // =========================================
   // RESET FORM
@@ -312,10 +319,9 @@ function AdminProducts() {
       category: "",
       brand: "",
       rating: "",
-      stock: ""
+      stock: "",
     });
   }
-
 
   // =========================================
   // PAGE
@@ -324,12 +330,9 @@ function AdminProducts() {
   return (
     <div className="admin-products-page">
 
-      {/* =====================================
-          HEADER
-      ====================================== */}
+      {/* HEADER */}
 
       <div className="admin-products-header">
-
         <div>
           <span className="admin-label">
             ADMIN PANEL
@@ -340,17 +343,13 @@ function AdminProducts() {
           </h1>
 
           <p>
-            Add, update and remove products from
-            your store.
+            Add, update and remove
+            products from your store.
           </p>
         </div>
-
       </div>
 
-
-      {/* =====================================
-          MESSAGES
-      ====================================== */}
+      {/* MESSAGES */}
 
       {message && (
         <div className="admin-success">
@@ -364,15 +363,11 @@ function AdminProducts() {
         </div>
       )}
 
-
-      {/* =====================================
-          PRODUCT FORM
-      ====================================== */}
+      {/* PRODUCT FORM */}
 
       <div className="admin-form-card">
 
         <div className="form-header">
-
           <h2>
             {editingId
               ? "Edit Product"
@@ -384,17 +379,15 @@ function AdminProducts() {
               ? "Update the product information."
               : "Enter the details for a new product."}
           </p>
-
         </div>
-
 
         <form onSubmit={handleSubmit}>
 
           <div className="form-grid">
 
             {/* Product Name */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Product Name
               </label>
@@ -407,13 +400,11 @@ function AdminProducts() {
                 placeholder="Enter product name"
                 required
               />
-
             </div>
 
-
             {/* Price */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Price
               </label>
@@ -427,13 +418,11 @@ function AdminProducts() {
                 min="0"
                 required
               />
-
             </div>
 
-
             {/* Category */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Category
               </label>
@@ -446,13 +435,11 @@ function AdminProducts() {
                 placeholder="e.g. Laptops"
                 required
               />
-
             </div>
 
-
             {/* Brand */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Brand
               </label>
@@ -465,13 +452,11 @@ function AdminProducts() {
                 placeholder="e.g. Dell"
                 required
               />
-
             </div>
 
-
             {/* Image URL */}
-            <div className="form-group full-width">
 
+            <div className="form-group full-width">
               <label>
                 Image URL
               </label>
@@ -484,13 +469,11 @@ function AdminProducts() {
                 placeholder="https://example.com/image.jpg"
                 required
               />
-
             </div>
 
-
             {/* Description */}
-            <div className="form-group full-width">
 
+            <div className="form-group full-width">
               <label>
                 Description
               </label>
@@ -503,13 +486,11 @@ function AdminProducts() {
                 rows="4"
                 required
               />
-
             </div>
 
-
             {/* Rating */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Rating
               </label>
@@ -524,13 +505,11 @@ function AdminProducts() {
                 step="0.1"
                 placeholder="0 - 5"
               />
-
             </div>
 
-
             {/* Stock */}
-            <div className="form-group">
 
+            <div className="form-group">
               <label>
                 Stock
               </label>
@@ -544,13 +523,12 @@ function AdminProducts() {
                 placeholder="Available quantity"
                 required
               />
-
             </div>
 
           </div>
 
+          {/* FORM BUTTONS */}
 
-          {/* Form buttons */}
           <div className="form-actions">
 
             <button
@@ -575,20 +553,14 @@ function AdminProducts() {
           </div>
 
         </form>
-
       </div>
 
-
-      {/* =====================================
-          PRODUCTS LIST
-      ====================================== */}
+      {/* PRODUCTS LIST */}
 
       <div className="products-list-card">
 
         <div className="products-list-header">
-
           <div>
-
             <h2>
               All Products
             </h2>
@@ -596,34 +568,25 @@ function AdminProducts() {
             <p>
               {products.length} products
             </p>
-
           </div>
-
         </div>
 
-
         {/* Loading */}
-        {loading ? (
 
+        {loading ? (
           <p className="admin-loading">
             Loading products...
           </p>
-
         ) : products.length === 0 ? (
-
-          /* No products */
           <p className="admin-loading">
             No products found.
           </p>
-
         ) : (
-
-          /* Product table */
           <div className="admin-products-table">
 
-            {/* Table header */}
-            <div className="table-header">
+            {/* Table Header */}
 
+            <div className="table-header">
               <span>
                 Product
               </span>
@@ -643,19 +606,18 @@ function AdminProducts() {
               <span>
                 Actions
               </span>
-
             </div>
 
-
             {/* Products */}
-            {products.map((product) => (
 
+            {products.map((product) => (
               <div
                 className="table-row"
                 key={product._id}
               >
 
                 {/* Product */}
+
                 <div className="admin-product-info">
 
                   <img
@@ -674,30 +636,33 @@ function AdminProducts() {
                     </span>
 
                   </div>
-
                 </div>
 
-
                 {/* Category */}
+
                 <span>
                   {product.category}
                 </span>
 
-
                 {/* Price */}
+
                 <strong>
                   ₹
-                  {Number(product.price).toLocaleString("en-IN")}
+                  {Number(
+                    product.price || 0
+                  ).toLocaleString(
+                    "en-IN"
+                  )}
                 </strong>
 
-
                 {/* Stock */}
+
                 <span>
                   {product.stock}
                 </span>
 
-
                 {/* Actions */}
+
                 <div className="product-actions">
 
                   <button
@@ -714,7 +679,9 @@ function AdminProducts() {
                     type="button"
                     className="delete-button"
                     onClick={() =>
-                      handleDelete(product._id)
+                      handleDelete(
+                        product._id
+                      )
                     }
                   >
                     Delete
@@ -723,15 +690,12 @@ function AdminProducts() {
                 </div>
 
               </div>
-
             ))}
 
           </div>
-
         )}
 
       </div>
-
     </div>
   );
 }

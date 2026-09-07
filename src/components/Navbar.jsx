@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 import { Link, useNavigate } from "react-router-dom";
 
 import "./Navbar.css";
+import API_URL from "../config";
 
 function Navbar() {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("token")
   );
-
 
   // ========================================
   // GET USER
@@ -38,13 +38,11 @@ function Navbar() {
 
   const isAdmin = user?.role === "admin";
 
-
   // ========================================
   // SEARCH
   // ========================================
 
   const [search, setSearch] = useState("");
-
 
   function handleSearch(e) {
     e.preventDefault();
@@ -61,19 +59,16 @@ function Navbar() {
     );
   }
 
-
   function clearSearch() {
     setSearch("");
     navigate("/products");
   }
-
 
   // ========================================
   // NOTIFICATIONS
   // ========================================
 
   const [notifications, setNotifications] = useState([]);
-
 
   // ========================================
   // AUTH CHANGE LISTENER
@@ -101,7 +96,6 @@ function Navbar() {
     };
   }, []);
 
-
   // ========================================
   // LOAD ADMIN NOTIFICATIONS
   // ========================================
@@ -117,26 +111,36 @@ function Navbar() {
           localStorage.getItem("token");
 
         const response = await fetch(
-          "http://localhost:5000/api/admin/notifications",
+          `${API_URL}/api/admin/notifications`,
           {
             headers: {
-              Authorization:
-                `Bearer ${token}`
-            }
+              Authorization: `Bearer ${token}`,
+            },
           }
         );
 
-        const data = await response.json();
+        const text = await response.text();
+
+        let data;
+
+        try {
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(
+            "Backend returned an invalid response."
+          );
+        }
 
         if (!response.ok) {
           throw new Error(
             data.message ||
-            "Failed to load notifications"
+              "Failed to load notifications"
           );
         }
 
-        setNotifications(data);
-
+        setNotifications(
+          Array.isArray(data) ? data : []
+        );
       } catch (error) {
         console.error(
           "Navbar notification error:",
@@ -148,7 +152,6 @@ function Navbar() {
     loadNotifications();
   }, [isAdmin]);
 
-
   // ========================================
   // SOCKET.IO
   // ========================================
@@ -158,10 +161,7 @@ function Navbar() {
       return;
     }
 
-    const socket = io(
-      "http://localhost:5000"
-    );
-
+    const socket = io(API_URL);
 
     socket.on("connect", () => {
       console.log(
@@ -178,11 +178,9 @@ function Navbar() {
       );
     });
 
-
     socket.on(
       "newOrder",
       (notification) => {
-
         console.log(
           "Navbar received new order:",
           notification
@@ -192,14 +190,13 @@ function Navbar() {
           (previous) => [
             {
               ...notification,
-              read: false
+              read: false,
             },
-            ...previous
+            ...previous,
           ]
         );
       }
     );
-
 
     socket.on("disconnect", () => {
       console.log(
@@ -207,13 +204,17 @@ function Navbar() {
       );
     });
 
+    socket.on("connect_error", (error) => {
+      console.error(
+        "Navbar socket connection error:",
+        error.message
+      );
+    });
 
     return () => {
       socket.disconnect();
     };
-
   }, [isAdmin]);
-
 
   // ========================================
   // UNREAD COUNT
@@ -224,7 +225,6 @@ function Navbar() {
       (notification) =>
         !notification.read
     ).length;
-
 
   // ========================================
   // LOGOUT
@@ -245,7 +245,6 @@ function Navbar() {
     navigate("/");
   }
 
-
   // ========================================
   // NAVBAR
   // ========================================
@@ -253,9 +252,7 @@ function Navbar() {
   return (
     <nav className="navbar">
 
-      {/* ==================================
-          LOGO
-      =================================== */}
+      {/* LOGO */}
 
       <Link
         to="/"
@@ -264,18 +261,13 @@ function Navbar() {
         MyShop 🛒
       </Link>
 
-
-      {/* ==================================
-          SEARCH BAR
-      =================================== */}
+      {/* SEARCH BAR */}
 
       <form
         className="navbar-search"
         onSubmit={handleSearch}
       >
-
         <div className="search-wrapper">
-
           <span className="search-icon">
             🔍
           </span>
@@ -300,9 +292,7 @@ function Navbar() {
               ×
             </button>
           )}
-
         </div>
-
 
         <button
           type="submit"
@@ -310,13 +300,9 @@ function Navbar() {
         >
           Search
         </button>
-
       </form>
 
-
-      {/* ==================================
-          NAV LINKS
-      =================================== */}
+      {/* NAV LINKS */}
 
       <div className="nav-links">
 
@@ -332,26 +318,21 @@ function Navbar() {
           Cart
         </Link>
 
-
         {isLoggedIn ? (
           <>
-
             {/* Profile */}
 
             <Link to="/profile">
               Profile
             </Link>
 
-
             {/* Admin */}
 
             {isAdmin && (
               <>
-
                 <Link to="/admin">
                   Admin
                 </Link>
-
 
                 {/* Notification */}
 
@@ -359,11 +340,8 @@ function Navbar() {
                   to="/admin"
                   className="notification-nav-link"
                   title="Admin Notifications"
-                  aria-label={
-                    `Admin notifications ${unreadCount}`
-                  }
+                  aria-label={`Admin notifications ${unreadCount}`}
                 >
-
                   <span className="notification-bell">
                     🔔
                   </span>
@@ -375,12 +353,9 @@ function Navbar() {
                         : unreadCount}
                     </span>
                   )}
-
                 </Link>
-
               </>
             )}
-
 
             {/* Logout */}
 
@@ -391,18 +366,14 @@ function Navbar() {
             >
               Logout
             </button>
-
           </>
         ) : (
-
           <Link to="/login">
             Login
           </Link>
-
         )}
 
       </div>
-
     </nav>
   );
 }

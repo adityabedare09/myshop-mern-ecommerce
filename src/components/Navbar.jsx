@@ -67,9 +67,7 @@ function Navbar() {
     }
 
     navigate(
-      `/products?search=${encodeURIComponent(
-        searchValue
-      )}`
+      `/products?search=${encodeURIComponent(searchValue)}`
     );
 
     setMenuOpen(false);
@@ -85,9 +83,7 @@ function Navbar() {
   // NOTIFICATIONS
   // ========================================
 
-  const [notifications, setNotifications] = useState(
-    []
-  );
+  const [notifications, setNotifications] = useState([]);
 
   // ========================================
   // AUTH CHANGE LISTENER
@@ -300,11 +296,13 @@ function Navbar() {
 
   return (
     <header className="navbar">
+
       {/* ==================================
           NAVBAR MAIN
       =================================== */}
 
       <div className="navbar-inner">
+
         {/* LOGO */}
 
         <Link
@@ -328,6 +326,7 @@ function Navbar() {
           onSubmit={handleSearch}
         >
           <div className="search-wrapper">
+
             <span
               className="search-icon"
               aria-hidden="true"
@@ -355,6 +354,7 @@ function Navbar() {
                 ×
               </button>
             )}
+
           </div>
 
           <button
@@ -368,6 +368,9 @@ function Navbar() {
         {/* DESKTOP NAV */}
 
         <nav className="nav-links">
+
+          {/* HOME */}
+
           <Link
             to="/"
             className={
@@ -378,6 +381,8 @@ function Navbar() {
           >
             Home
           </Link>
+
+          {/* PRODUCTS */}
 
           <Link
             to="/products"
@@ -390,6 +395,8 @@ function Navbar() {
             Products
           </Link>
 
+          {/* CART */}
+
           <Link
             to="/cart"
             className={
@@ -401,8 +408,13 @@ function Navbar() {
             Cart
           </Link>
 
+          {/* LOGGED-IN USER */}
+
           {isLoggedIn ? (
             <>
+
+              {/* PROFILE */}
+
               <Link
                 to="/profile"
                 className={
@@ -414,8 +426,24 @@ function Navbar() {
                 Profile
               </Link>
 
+              {/* MY ORDERS */}
+
+              <Link
+                to="/orders"
+                className={
+                  isActive("/orders")
+                    ? "nav-link active"
+                    : "nav-link"
+                }
+              >
+                My Orders
+              </Link>
+
+              {/* ADMIN */}
+
               {isAdmin && (
                 <>
+
                   <Link
                     to="/admin"
                     className={
@@ -426,6 +454,8 @@ function Navbar() {
                   >
                     Admin
                   </Link>
+
+                  {/* NOTIFICATIONS */}
 
                   <Link
                     to="/admin"
@@ -445,8 +475,11 @@ function Navbar() {
                       </span>
                     )}
                   </Link>
+
                 </>
               )}
+
+              {/* LOGOUT */}
 
               <button
                 type="button"
@@ -455,15 +488,21 @@ function Navbar() {
               >
                 Logout
               </button>
+
             </>
           ) : (
+
+            /* LOGIN */
+
             <Link
               to="/login"
               className="login-button"
             >
               Login
             </Link>
+
           )}
+
         </nav>
 
         {/* MOBILE MENU BUTTON */}
@@ -489,6 +528,7 @@ function Navbar() {
           <span></span>
           <span></span>
         </button>
+
       </div>
 
       {/* ==================================
@@ -500,13 +540,15 @@ function Navbar() {
           menuOpen ? "show" : ""
         }`}
       >
-        {/* Mobile Search */}
+
+        {/* MOBILE SEARCH */}
 
         <form
           className="navbar-search mobile-search"
           onSubmit={handleSearch}
         >
           <div className="search-wrapper">
+
             <span
               className="search-icon"
               aria-hidden="true"
@@ -534,6 +576,7 @@ function Navbar() {
                 ×
               </button>
             )}
+
           </div>
 
           <button
@@ -544,9 +587,12 @@ function Navbar() {
           </button>
         </form>
 
-        {/* Mobile Navigation */}
+        {/* MOBILE NAVIGATION */}
 
         <nav className="mobile-nav-links">
+
+          {/* HOME */}
+
           <Link
             to="/"
             onClick={closeMenu}
@@ -554,6 +600,8 @@ function Navbar() {
             <span>⌂</span>
             Home
           </Link>
+
+          {/* PRODUCTS */}
 
           <Link
             to="/products"
@@ -563,6 +611,8 @@ function Navbar() {
             Products
           </Link>
 
+          {/* CART */}
+
           <Link
             to="/cart"
             onClick={closeMenu}
@@ -571,8 +621,13 @@ function Navbar() {
             Cart
           </Link>
 
+          {/* LOGGED-IN USER */}
+
           {isLoggedIn ? (
             <>
+
+              {/* PROFILE */}
+
               <Link
                 to="/profile"
                 onClick={closeMenu}
@@ -581,8 +636,21 @@ function Navbar() {
                 Profile
               </Link>
 
+              {/* MY ORDERS */}
+
+              <Link
+                to="/orders"
+                onClick={closeMenu}
+              >
+                <span>📦</span>
+                My Orders
+              </Link>
+
+              {/* ADMIN */}
+
               {isAdmin && (
                 <>
+
                   <Link
                     to="/admin"
                     onClick={closeMenu}
@@ -590,6 +658,8 @@ function Navbar() {
                     <span>⚙️</span>
                     Admin
                   </Link>
+
+                  {/* NOTIFICATIONS */}
 
                   <Link
                     to="/admin"
@@ -609,8 +679,11 @@ function Navbar() {
 
                     Notifications
                   </Link>
+
                 </>
               )}
+
+              {/* LOGOUT */}
 
               <button
                 type="button"
@@ -620,8 +693,12 @@ function Navbar() {
                 <span>↪</span>
                 Logout
               </button>
+
             </>
           ) : (
+
+            /* LOGIN */
+
             <Link
               to="/login"
               onClick={closeMenu}
@@ -629,9 +706,13 @@ function Navbar() {
               <span>🔐</span>
               Login
             </Link>
+
           )}
+
         </nav>
+
       </div>
+
     </header>
   );
 }

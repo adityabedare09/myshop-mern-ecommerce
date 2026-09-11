@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import "./Navbar.css";
 import API_URL from "../config";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // ========================================
   // LOGIN STATE
@@ -15,6 +20,12 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!localStorage.getItem("token")
   );
+
+  // ========================================
+  // MOBILE MENU
+  // ========================================
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // ========================================
   // GET USER
@@ -51,24 +62,32 @@ function Navbar() {
 
     if (!searchValue) {
       navigate("/products");
+      setMenuOpen(false);
       return;
     }
 
     navigate(
-      `/products?search=${encodeURIComponent(searchValue)}`
+      `/products?search=${encodeURIComponent(
+        searchValue
+      )}`
     );
+
+    setMenuOpen(false);
   }
 
   function clearSearch() {
     setSearch("");
     navigate("/products");
+    setMenuOpen(false);
   }
 
   // ========================================
   // NOTIFICATIONS
   // ========================================
 
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState(
+    []
+  );
 
   // ========================================
   // AUTH CHANGE LISTENER
@@ -109,6 +128,10 @@ function Navbar() {
       try {
         const token =
           localStorage.getItem("token");
+
+        if (!token) {
+          return;
+        }
 
         const response = await fetch(
           `${API_URL}/api/admin/notifications`,
@@ -172,10 +195,12 @@ function Navbar() {
       const token =
         localStorage.getItem("token");
 
-      socket.emit(
-        "joinAdmin",
-        token
-      );
+      if (token) {
+        socket.emit(
+          "joinAdmin",
+          token
+        );
+      }
     });
 
     socket.on(
@@ -204,12 +229,15 @@ function Navbar() {
       );
     });
 
-    socket.on("connect_error", (error) => {
-      console.error(
-        "Navbar socket connection error:",
-        error.message
-      );
-    });
+    socket.on(
+      "connect_error",
+      (error) => {
+        console.error(
+          "Navbar socket connection error:",
+          error.message
+        );
+      }
+    );
 
     return () => {
       socket.disconnect();
@@ -237,6 +265,7 @@ function Navbar() {
     setIsLoggedIn(false);
     setUser(null);
     setNotifications([]);
+    setMenuOpen(false);
 
     window.dispatchEvent(
       new Event("authChange")
@@ -246,135 +275,364 @@ function Navbar() {
   }
 
   // ========================================
+  // ACTIVE LINK
+  // ========================================
+
+  function isActive(path) {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+
+    return location.pathname.startsWith(path);
+  }
+
+  // ========================================
+  // CLOSE MOBILE MENU
+  // ========================================
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  // ========================================
   // NAVBAR
   // ========================================
 
   return (
-    <nav className="navbar">
+    <header className="navbar">
+      {/* ==================================
+          NAVBAR MAIN
+      =================================== */}
 
-      {/* LOGO */}
+      <div className="navbar-inner">
+        {/* LOGO */}
 
-      <Link
-        to="/"
-        className="logo"
-      >
-        MyShop 🛒
-      </Link>
-
-      {/* SEARCH BAR */}
-
-      <form
-        className="navbar-search"
-        onSubmit={handleSearch}
-      >
-        <div className="search-wrapper">
-          <span className="search-icon">
-            🔍
+        <Link
+          to="/"
+          className="logo"
+          onClick={closeMenu}
+        >
+          <span className="logo-icon">
+            🛒
           </span>
 
-          <input
-            type="search"
-            value={search}
-            onChange={(e) =>
-              setSearch(e.target.value)
-            }
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
+          <span className="logo-text">
+            MyShop
+          </span>
+        </Link>
 
-          {search && (
-            <button
-              type="button"
-              className="clear-search"
-              onClick={clearSearch}
-              aria-label="Clear search"
+        {/* DESKTOP SEARCH */}
+
+        <form
+          className="navbar-search desktop-search"
+          onSubmit={handleSearch}
+        >
+          <div className="search-wrapper">
+            <span
+              className="search-icon"
+              aria-hidden="true"
             >
-              ×
-            </button>
+              🔍
+            </span>
+
+            <input
+              type="search"
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search products..."
+              aria-label="Search products"
+            />
+
+            {search && (
+              <button
+                type="button"
+                className="clear-search"
+                onClick={clearSearch}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="search-button"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* DESKTOP NAV */}
+
+        <nav className="nav-links">
+          <Link
+            to="/"
+            className={
+              isActive("/")
+                ? "nav-link active"
+                : "nav-link"
+            }
+          >
+            Home
+          </Link>
+
+          <Link
+            to="/products"
+            className={
+              isActive("/products")
+                ? "nav-link active"
+                : "nav-link"
+            }
+          >
+            Products
+          </Link>
+
+          <Link
+            to="/cart"
+            className={
+              isActive("/cart")
+                ? "nav-link active"
+                : "nav-link"
+            }
+          >
+            Cart
+          </Link>
+
+          {isLoggedIn ? (
+            <>
+              <Link
+                to="/profile"
+                className={
+                  isActive("/profile")
+                    ? "nav-link active"
+                    : "nav-link"
+                }
+              >
+                Profile
+              </Link>
+
+              {isAdmin && (
+                <>
+                  <Link
+                    to="/admin"
+                    className={
+                      isActive("/admin")
+                        ? "nav-link active"
+                        : "nav-link"
+                    }
+                  >
+                    Admin
+                  </Link>
+
+                  <Link
+                    to="/admin"
+                    className="notification-nav-link"
+                    title="Admin Notifications"
+                    aria-label={`Admin notifications ${unreadCount}`}
+                  >
+                    <span className="notification-bell">
+                      🔔
+                    </span>
+
+                    {unreadCount > 0 && (
+                      <span className="nav-notification-badge">
+                        {unreadCount > 99
+                          ? "99+"
+                          : unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                </>
+              )}
+
+              <button
+                type="button"
+                className="logout-button"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              className="login-button"
+            >
+              Login
+            </Link>
           )}
-        </div>
+        </nav>
+
+        {/* MOBILE MENU BUTTON */}
 
         <button
-          type="submit"
-          className="search-button"
+          type="button"
+          className={`mobile-menu-button ${
+            menuOpen ? "open" : ""
+          }`}
+          onClick={() =>
+            setMenuOpen(
+              (previous) => !previous
+            )
+          }
+          aria-label={
+            menuOpen
+              ? "Close menu"
+              : "Open menu"
+          }
+          aria-expanded={menuOpen}
         >
-          Search
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
-      </form>
-
-      {/* NAV LINKS */}
-
-      <div className="nav-links">
-
-        <Link to="/">
-          Home
-        </Link>
-
-        <Link to="/products">
-          Products
-        </Link>
-
-        <Link to="/cart">
-          Cart
-        </Link>
-
-        {isLoggedIn ? (
-          <>
-            {/* Profile */}
-
-            <Link to="/profile">
-              Profile
-            </Link>
-
-            {/* Admin */}
-
-            {isAdmin && (
-              <>
-                <Link to="/admin">
-                  Admin
-                </Link>
-
-                {/* Notification */}
-
-                <Link
-                  to="/admin"
-                  className="notification-nav-link"
-                  title="Admin Notifications"
-                  aria-label={`Admin notifications ${unreadCount}`}
-                >
-                  <span className="notification-bell">
-                    🔔
-                  </span>
-
-                  {unreadCount > 0 && (
-                    <span className="nav-notification-badge">
-                      {unreadCount > 99
-                        ? "99+"
-                        : unreadCount}
-                    </span>
-                  )}
-                </Link>
-              </>
-            )}
-
-            {/* Logout */}
-
-            <button
-              type="button"
-              className="logout-button"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <Link to="/login">
-            Login
-          </Link>
-        )}
-
       </div>
-    </nav>
+
+      {/* ==================================
+          MOBILE MENU
+      =================================== */}
+
+      <div
+        className={`mobile-menu ${
+          menuOpen ? "show" : ""
+        }`}
+      >
+        {/* Mobile Search */}
+
+        <form
+          className="navbar-search mobile-search"
+          onSubmit={handleSearch}
+        >
+          <div className="search-wrapper">
+            <span
+              className="search-icon"
+              aria-hidden="true"
+            >
+              🔍
+            </span>
+
+            <input
+              type="search"
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search products..."
+              aria-label="Search products"
+            />
+
+            {search && (
+              <button
+                type="button"
+                className="clear-search"
+                onClick={clearSearch}
+                aria-label="Clear search"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="search-button"
+          >
+            Search
+          </button>
+        </form>
+
+        {/* Mobile Navigation */}
+
+        <nav className="mobile-nav-links">
+          <Link
+            to="/"
+            onClick={closeMenu}
+          >
+            <span>⌂</span>
+            Home
+          </Link>
+
+          <Link
+            to="/products"
+            onClick={closeMenu}
+          >
+            <span>🛍️</span>
+            Products
+          </Link>
+
+          <Link
+            to="/cart"
+            onClick={closeMenu}
+          >
+            <span>🛒</span>
+            Cart
+          </Link>
+
+          {isLoggedIn ? (
+            <>
+              <Link
+                to="/profile"
+                onClick={closeMenu}
+              >
+                <span>👤</span>
+                Profile
+              </Link>
+
+              {isAdmin && (
+                <>
+                  <Link
+                    to="/admin"
+                    onClick={closeMenu}
+                  >
+                    <span>⚙️</span>
+                    Admin
+                  </Link>
+
+                  <Link
+                    to="/admin"
+                    onClick={closeMenu}
+                  >
+                    <span className="mobile-notification-icon">
+                      🔔
+
+                      {unreadCount > 0 && (
+                        <span className="mobile-notification-badge">
+                          {unreadCount > 99
+                            ? "99+"
+                            : unreadCount}
+                        </span>
+                      )}
+                    </span>
+
+                    Notifications
+                  </Link>
+                </>
+              )}
+
+              <button
+                type="button"
+                className="mobile-logout-button"
+                onClick={handleLogout}
+              >
+                <span>↪</span>
+                Logout
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              onClick={closeMenu}
+            >
+              <span>🔐</span>
+              Login
+            </Link>
+          )}
+        </nav>
+      </div>
+    </header>
   );
 }
 

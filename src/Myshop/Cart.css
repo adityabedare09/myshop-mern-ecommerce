@@ -288,7 +288,8 @@
 ========================= */
 
 .cart-summary {
-  height: fit-content;
+  height: auto;
+  min-height: 250px;
 
   padding: 26px;
 
@@ -383,9 +384,10 @@
   justify-content: center;
 
   width: 100%;
+  min-height: 48px;
 
-  margin-top: 25px;
-  padding: 14px 18px;
+  margin-top: 24px;
+  padding: 13px 16px;
 
   box-sizing: border-box;
 
@@ -393,13 +395,13 @@
   border-radius: 10px;
 
   background: #4f46e5;
-
   color: #ffffff;
 
   font-size: 15px;
   font-weight: 700;
 
   text-decoration: none;
+  text-align: center;
 
   cursor: pointer;
 
@@ -550,10 +552,6 @@
 
   .cart-summary {
     position: static;
-
-    width: 100%;
-
-    box-sizing: border-box;
   }
 
   .cart-item {
@@ -695,7 +693,11 @@
   }
 
   .checkout-button {
-    padding: 14px;
+    width: 100%;
+    min-height: 48px;
+    padding: 14px 12px;
+    font-size: 14px;
+    white-space: nowrap;
   }
 
 

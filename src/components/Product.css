@@ -1,40 +1,146 @@
+/* ================================
+   Product Page
+================================ */
+
 .products-page {
-  min-height: calc(100vh - 70px);
-
-  padding: 60px 8%;
-
+  min-height: calc(100vh - 80px);
+  padding: 60px 6%;
   background: #f8fafc;
 }
 
+/* ================================
+   Header
+================================ */
+
 .products-header {
   text-align: center;
-
   margin-bottom: 45px;
 }
 
 .products-header h1 {
-  margin: 0;
-
-  font-size: 38px;
+  margin: 0 0 12px;
+  font-size: 40px;
+  font-weight: 700;
   color: #111827;
 }
 
 .products-header p {
-  margin-top: 10px;
-
-  color: #6b7280;
-
+  margin: 0;
   font-size: 16px;
+  color: #6b7280;
 }
 
+/* ================================
+   Product Grid
+================================ */
+
 .products-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
   display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px;
+}
 
-  grid-template-columns: repeat(3, 1fr);
+/* ================================
+   No Products
+================================ */
 
-  gap: 30px;
+.no-products {
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 40px 20px;
 
-  max-width: 1100px;
+  text-align: center;
+  background: #ffffff;
+  border-radius: 16px;
+  color: #6b7280;
+}
 
-  margin: auto;
+.no-products h2 {
+  margin-bottom: 10px;
+  color: #111827;
+}
+
+/* ================================
+   Tablet - Large
+================================ */
+
+@media (max-width: 1100px) {
+  .products-page {
+    padding: 50px 5%;
+  }
+
+  .products-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+/* ================================
+   Tablet
+================================ */
+
+@media (max-width: 800px) {
+  .products-page {
+    padding: 45px 4%;
+  }
+
+  .products-header h1 {
+    font-size: 34px;
+  }
+
+  .products-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+}
+
+/* ================================
+   Mobile
+================================ */
+
+@media (max-width: 600px) {
+  .products-page {
+    padding: 35px 16px;
+  }
+
+  .products-header {
+    margin-bottom: 30px;
+  }
+
+  .products-header h1 {
+    font-size: 30px;
+  }
+
+  .products-header p {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .products-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+  }
+}
+
+/* ================================
+   Small Mobile
+================================ */
+
+@media (max-width: 400px) {
+  .products-page {
+    padding: 30px 12px;
+  }
+
+  .products-header h1 {
+    font-size: 26px;
+  }
+
+  .products-container {
+    gap: 16px;
+  }
 }

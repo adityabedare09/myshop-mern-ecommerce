@@ -7,6 +7,7 @@
   padding: 45px 6%;
   background: #f8fafc;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .admin-users-container {
@@ -34,6 +35,7 @@
   font-weight: 700;
 
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .admin-users-header h1 {
@@ -42,14 +44,18 @@
   color: #111827;
 
   font-size: 34px;
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: -0.4px;
 }
 
 .admin-users-header p {
-  margin: 8px 0 0;
+  margin: 9px 0 0;
 
   color: #6b7280;
 
   font-size: 15px;
+  line-height: 1.6;
 }
 
 
@@ -59,68 +65,95 @@
 
 .admin-users-success,
 .admin-users-error {
+  width: 100%;
   margin-bottom: 20px;
 
   padding: 13px 16px;
 
   border-radius: 10px;
 
-  font-size: 14px;
+  box-sizing: border-box;
 
+  font-size: 14px;
   font-weight: 600;
+
+  animation: messageSlideIn 0.25s ease;
 }
 
 .admin-users-success {
   background: #ecfdf5;
-
   border: 1px solid #a7f3d0;
-
   color: #047857;
 }
 
 .admin-users-error {
   background: #fef2f2;
-
   border: 1px solid #fecaca;
-
   color: #b91c1c;
+}
+
+@keyframes messageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 
 /* =========================================
-   COUNT
+   USERS COUNT
 ========================================= */
 
 .users-count-card {
   display: inline-flex;
-
   flex-direction: column;
 
   gap: 4px;
 
   margin-bottom: 25px;
-
   padding: 18px 25px;
 
-  background: white;
+  background: #ffffff;
 
   border: 1px solid #e5e7eb;
-
   border-radius: 14px;
 
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.users-count-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #c7d2fe;
+
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.07);
 }
 
 .users-count-card strong {
   color: #111827;
 
   font-size: 28px;
+  line-height: 1.2;
+  font-weight: 750;
 }
 
 .users-count-card span {
   color: #6b7280;
 
   font-size: 13px;
+  font-weight: 500;
 }
 
 
@@ -130,7 +163,6 @@
 
 .users-list {
   display: flex;
-
   flex-direction: column;
 
   gap: 15px;
@@ -142,9 +174,11 @@
 ========================================= */
 
 .user-card {
+  position: relative;
+
   display: grid;
 
-  grid-template-columns: 55px 1fr auto;
+  grid-template-columns: 55px minmax(0, 1fr) auto;
 
   gap: 18px;
 
@@ -152,13 +186,55 @@
 
   padding: 20px;
 
-  background: white;
+  background: #ffffff;
 
   border: 1px solid #e5e7eb;
-
   border-radius: 15px;
 
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 5px 20px rgba(0, 0, 0, 0.04);
+
+  box-sizing: border-box;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.user-card::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 3px;
+
+  background: #4f46e5;
+
+  transform: scaleY(0);
+
+  transform-origin: center;
+
+  transition: transform 0.25s ease;
+}
+
+.user-card:hover {
+  transform: translateY(-3px);
+
+  border-color: #c7d2fe;
+
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.user-card:hover::before {
+  transform: scaleY(1);
 }
 
 
@@ -182,8 +258,23 @@
   color: #4338ca;
 
   font-size: 22px;
-
   font-weight: 700;
+
+  box-sizing: border-box;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.user-card:hover .user-avatar {
+  transform: scale(1.06);
+
+  background: #e0e7ff;
+
+  box-shadow:
+    0 5px 14px rgba(79, 70, 229, 0.12);
 }
 
 
@@ -201,16 +292,21 @@
   color: #111827;
 
   font-size: 17px;
+  line-height: 1.35;
+  font-weight: 700;
+
+  overflow-wrap: anywhere;
 }
 
 .user-info p {
-  margin: 0 0 8px;
+  margin: 0 0 9px;
 
   color: #6b7280;
 
   font-size: 13px;
+  line-height: 1.5;
 
-  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 
@@ -219,7 +315,8 @@
 ========================================= */
 
 .user-role {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
 
   padding: 4px 9px;
 
@@ -230,7 +327,7 @@
   color: #374151;
 
   font-size: 11px;
-
+  line-height: 1.2;
   font-weight: 700;
 
   text-transform: uppercase;
@@ -244,80 +341,132 @@
 
 
 /* =========================================
-   ACTIONS
+   USER ACTIONS
 ========================================= */
 
 .user-actions {
   display: flex;
 
-  align-items: flex-end;
-
   flex-direction: column;
 
+  align-items: flex-end;
+
   gap: 10px;
+
+  min-width: 110px;
 }
 
 .user-date {
   color: #9ca3af;
 
   font-size: 12px;
+  line-height: 1.4;
+
+  white-space: nowrap;
 }
 
+
+/* =========================================
+   DELETE BUTTON
+========================================= */
+
 .delete-user-button {
-  padding: 8px 13px;
+  min-height: 36px;
 
-  border: none;
+  padding: 8px 14px;
 
-  border-radius: 7px;
+  border: 1px solid transparent;
+  border-radius: 8px;
 
   background: #fef2f2;
 
   color: #dc2626;
 
   font-size: 12px;
-
   font-weight: 600;
 
   cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .delete-user-button:hover {
   background: #fee2e2;
+
+  border-color: #fecaca;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 10px rgba(220, 38, 38, 0.08);
+}
+
+.delete-user-button:active {
+  transform: translateY(0);
+}
+
+.delete-user-button:focus-visible {
+  outline: 3px solid rgba(220, 38, 38, 0.18);
+  outline-offset: 2px;
 }
 
 
 /* =========================================
-   EMPTY
+   EMPTY STATE
 ========================================= */
 
 .no-users {
-  padding: 50px 20px;
+  padding: 55px 20px;
 
   text-align: center;
 
-  background: white;
+  background: #ffffff;
 
   border: 1px solid #e5e7eb;
-
   border-radius: 18px;
+
+  box-shadow:
+    0 6px 22px rgba(0, 0, 0, 0.04);
 }
 
 .no-users > div {
+  margin-bottom: 15px;
+
   font-size: 45px;
 
-  margin-bottom: 15px;
+  animation: emptyFloat 2.5s ease-in-out infinite;
 }
 
 .no-users h2 {
   margin: 0 0 8px;
 
   color: #111827;
+
+  font-size: 21px;
 }
 
 .no-users p {
   margin: 0;
 
   color: #6b7280;
+
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@keyframes emptyFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 
@@ -326,11 +475,13 @@
 ========================================= */
 
 .admin-users-loading {
+  padding: 60px 0;
+
   color: #6b7280;
 
   text-align: center;
 
-  padding: 50px 0;
+  font-size: 15px;
 }
 
 
@@ -344,20 +495,41 @@
     padding: 35px 5%;
   }
 
+  .admin-users-header {
+    margin-bottom: 25px;
+  }
+
+  .admin-users-header h1 {
+    font-size: 31px;
+  }
+
   .user-card {
-    grid-template-columns: 50px 1fr;
+    grid-template-columns: 50px minmax(0, 1fr);
 
     gap: 15px;
+  }
+
+  .user-avatar {
+    width: 50px;
+    height: 50px;
+
+    font-size: 20px;
   }
 
   .user-actions {
     grid-column: 2;
 
-    align-items: flex-start;
+    min-width: 0;
 
     flex-direction: row;
 
+    align-items: center;
+
     flex-wrap: wrap;
+  }
+
+  .user-date {
+    white-space: normal;
   }
 }
 
@@ -369,40 +541,87 @@
 @media (max-width: 600px) {
 
   .admin-users-page {
+    min-height: calc(100vh - 60px);
+
     padding: 25px 16px;
+  }
+
+  .admin-users-header {
+    margin-bottom: 22px;
   }
 
   .admin-users-header h1 {
     font-size: 28px;
   }
 
-  .user-card {
-    grid-template-columns: 50px 1fr;
-
-    padding: 16px;
+  .admin-users-header p {
+    font-size: 14px;
   }
 
-  .user-avatar {
-    width: 50px;
-    height: 50px;
+  .admin-label {
+    font-size: 11px;
+  }
 
-    font-size: 20px;
+  .users-count-card {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin-bottom: 20px;
+
+    padding: 17px 20px;
+  }
+
+  .users-count-card strong {
+    font-size: 26px;
+  }
+
+  .user-card {
+    grid-template-columns: 50px minmax(0, 1fr);
+
+    gap: 14px;
+
+    padding: 17px;
+
+    border-radius: 14px;
   }
 
   .user-info h2 {
     font-size: 16px;
   }
 
+  .user-info p {
+    font-size: 13px;
+  }
+
   .user-actions {
     grid-column: 1 / -1;
 
-    padding-top: 10px;
+    width: 100%;
+
+    padding-top: 12px;
 
     border-top: 1px solid #f1f5f9;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 9px;
+  }
+
+  .user-date {
+    font-size: 11px;
   }
 
   .delete-user-button {
     width: 100%;
+
+    min-height: 42px;
+  }
+
+  .no-users {
+    padding: 45px 18px;
   }
 }
 
@@ -421,17 +640,127 @@
     font-size: 24px;
   }
 
+  .admin-users-header p {
+    font-size: 13px;
+  }
+
+  .users-count-card {
+    padding: 15px 17px;
+  }
+
   .user-card {
+    grid-template-columns: 46px minmax(0, 1fr);
+
+    gap: 12px;
+
     padding: 14px;
   }
 
-  .user-actions {
-    flex-direction: column;
+  .user-avatar {
+    width: 46px;
+    height: 46px;
 
-    align-items: stretch;
+    font-size: 18px;
   }
 
-  .user-date {
-    font-size: 11px;
+  .user-info h2 {
+    font-size: 15px;
+  }
+
+  .user-info p {
+    font-size: 12px;
+  }
+
+  .user-role {
+    font-size: 10px;
+  }
+
+  .no-users > div {
+    font-size: 40px;
+  }
+
+  .no-users h2 {
+    font-size: 19px;
+  }
+}
+
+
+/* =========================================
+   VERY SMALL DEVICES
+========================================= */
+
+@media (max-width: 360px) {
+
+  .admin-users-page {
+    padding: 18px 10px;
+  }
+
+  .admin-users-header h1 {
+    font-size: 22px;
+  }
+
+  .user-card {
+    padding: 13px;
+  }
+
+  .users-count-card {
+    margin-bottom: 16px;
+  }
+}
+
+
+/* =========================================
+   TOUCH DEVICES
+========================================= */
+
+@media (hover: none) {
+
+  .user-card:hover {
+    transform: none;
+
+    border-color: #e5e7eb;
+
+    box-shadow:
+      0 5px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .user-card:hover::before {
+    transform: scaleY(0);
+  }
+
+  .user-card:hover .user-avatar {
+    transform: none;
+
+    background: #eef2ff;
+
+    box-shadow: none;
+  }
+
+  .users-count-card:hover {
+    transform: none;
+
+    border-color: #e5e7eb;
+
+    box-shadow:
+      0 5px 20px rgba(0, 0, 0, 0.04);
+  }
+}
+
+
+/* =========================================
+   ACCESSIBILITY / REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .user-card,
+  .user-avatar,
+  .users-count-card,
+  .delete-user-button,
+  .admin-users-success,
+  .admin-users-error,
+  .no-users > div {
+    transition: none;
+    animation: none;
   }
 }

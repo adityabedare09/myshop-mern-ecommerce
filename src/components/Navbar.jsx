@@ -395,18 +395,20 @@ function Navbar() {
             Products
           </Link>
 
-          {/* CART */}
+          {/* CART - NORMAL USERS ONLY */}
 
-          <Link
-            to="/cart"
-            className={
-              isActive("/cart")
-                ? "nav-link active"
-                : "nav-link"
-            }
-          >
-            Cart
-          </Link>
+          {!isAdmin && (
+            <Link
+              to="/cart"
+              className={
+                isActive("/cart")
+                  ? "nav-link active"
+                  : "nav-link"
+              }
+            >
+              Cart
+            </Link>
+          )}
 
           {/* LOGGED-IN USER */}
 
@@ -426,18 +428,20 @@ function Navbar() {
                 Profile
               </Link>
 
-              {/* MY ORDERS */}
+              {/* MY ORDERS - NORMAL USERS ONLY */}
 
-              <Link
-                to="/orders"
-                className={
-                  isActive("/orders")
-                    ? "nav-link active"
-                    : "nav-link"
-                }
-              >
-                My Orders
-              </Link>
+              {!isAdmin && (
+                <Link
+                  to="/orders"
+                  className={
+                    isActive("/orders")
+                      ? "nav-link active"
+                      : "nav-link"
+                  }
+                >
+                  My Orders
+                </Link>
+              )}
 
               {/* ADMIN */}
 
@@ -611,15 +615,17 @@ function Navbar() {
             Products
           </Link>
 
-          {/* CART */}
+          {/* CART - NORMAL USERS ONLY */}
 
-          <Link
-            to="/cart"
-            onClick={closeMenu}
-          >
-            <span>🛒</span>
-            Cart
-          </Link>
+          {!isAdmin && (
+            <Link
+              to="/cart"
+              onClick={closeMenu}
+            >
+              <span>🛒</span>
+              Cart
+            </Link>
+          )}
 
           {/* LOGGED-IN USER */}
 
@@ -636,15 +642,17 @@ function Navbar() {
                 Profile
               </Link>
 
-              {/* MY ORDERS */}
+              {/* MY ORDERS - NORMAL USERS ONLY */}
 
-              <Link
-                to="/orders"
-                onClick={closeMenu}
-              >
-                <span>📦</span>
-                My Orders
-              </Link>
+              {!isAdmin && (
+                <Link
+                  to="/orders"
+                  onClick={closeMenu}
+                >
+                  <span>📦</span>
+                  My Orders
+                </Link>
+              )}
 
               {/* ADMIN */}
 
